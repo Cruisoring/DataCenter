@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCenter", "DataCenter\DataCenter.csproj", "{D5F68B14-A856-4801-BAB7-88302E095FCD}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DataCenter.Common", "DataCenter.Common\DataCenter.Common.shproj", "{81D34349-D007-4235-9064-B4F94C8DF82F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCenter.UnitTest", "DataCenter.UnitTest\DataCenter.UnitTest.csproj", "{EE122C16-EEB6-4A49-84A1-181D23606016}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DataCenter.Common\DataCenter.Common.projitems*{81d34349-d007-4235-9064-b4f94c8df82f}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D5F68B14-A856-4801-BAB7-88302E095FCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5F68B14-A856-4801-BAB7-88302E095FCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5F68B14-A856-4801-BAB7-88302E095FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5F68B14-A856-4801-BAB7-88302E095FCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE122C16-EEB6-4A49-84A1-181D23606016}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE122C16-EEB6-4A49-84A1-181D23606016}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE122C16-EEB6-4A49-84A1-181D23606016}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE122C16-EEB6-4A49-84A1-181D23606016}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F5EA9613-E0C6-45E9-AFF8-0E9D264CE505}
+	EndGlobalSection
+EndGlobal
