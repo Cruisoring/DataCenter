@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ExpirableRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FactoryWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GetValueDelegate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IExpirableRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IRepository.cs" />

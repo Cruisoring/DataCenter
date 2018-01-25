@@ -1,191 +1,190 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DataCenter.Common
 {
-    public class ExpirableRepository<TKey, TValue> : 
-        StatefulRepository<TKey, DateTime, TValue>, IExpirableRepository<TKey, TValue>
-    {
-        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
-            Func<TKey, DateTime> stateFunc,
-            Func<TKey, TValue> f1,
-            IDictionary<TKey, Tuple<DateTime, TValue>> store= null)
-            : base(isValid, stateFunc, f1, store)
-        {
-        }
+    //    public class ExpirableRepository<TKey, TValue> :
+    //        StatefulRepository<TKey, DateTime, TValue>, IExpirableRepository<TKey, TValue>
+    //    {
+    //        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
+    //            Func<TKey, DateTime> stateFunc,
+    //            Func<TKey, TValue> f1,
+    //            IDictionary<TKey, Tuple<DateTime, TValue>> store = null)
+    //            : base(isValid, stateFunc, f1, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
+    //            GetValueDelegate<TKey, DateTime, TValue> getValueFactory,
+    //            IDictionary<TKey, Tuple<DateTime, TValue>> store = null)
+    //            : base(isValid, getValueFactory, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(TimeSpan expiration,
+    //            Func<TKey, TValue> f1,
+    //            IDictionary<TKey, Tuple<DateTime, TValue>> store = null)
+    //            : this((key, time) => time > DateTime.UtcNow, key => DateTime.UtcNow + expiration, f1, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(TimeSpan expiration,
+    //            GetValueDelegate<TKey, DateTime, TValue> getValueFactory,
+    //            IDictionary<TKey, Tuple<DateTime, TValue>> store = null)
+    //            : base((key, time) => time > DateTime.UtcNow, getValueFactory, store)
+    //        {
+    //        }
+    //    }
+    //
+    //    public class ExpirableRepository<TKey, TValue1, TValue2> :
+    //        StatefulRepository<TKey, DateTime, TValue1, TValue2>, IExpirableRepository<TKey, TValue1, TValue2>
+    //    {
+    //        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
+    //            Func<TKey, DateTime> stateFunc,
+    //            Func<TKey, TValue1> f1,
+    //            Func<TKey, TValue2> f2,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2>> store = null)
+    //            : base(isValid, stateFunc, f1, f2, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
+    //            GetValueDelegate<TKey, DateTime, TValue1, TValue2> getValueFactory,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2>> store = null)
+    //            : base(isValid, getValueFactory, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(TimeSpan expiration,
+    //            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2>> store = null)
+    //            : this((key, time) => time > DateTime.UtcNow, key => DateTime.UtcNow + expiration, f1, f2, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(TimeSpan expiration,
+    //            GetValueDelegate<TKey, DateTime, TValue1, TValue2> getValueFactory,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2>> store = null)
+    //            : base((key, time) => time > DateTime.UtcNow, getValueFactory, store)
+    //        {
+    //        }
+    //    }
+    //
+    //    public class ExpirableRepository<TKey, TValue1, TValue2, TValue3> :
+    //        StatefulRepository<TKey, DateTime, TValue1, TValue2, TValue3>,
+    //        IExpirableRepository<TKey, TValue1, TValue2, TValue3>
+    //    {
+    //        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
+    //            Func<TKey, DateTime> stateFunc,
+    //            Func<TKey, TValue1> f1,
+    //            Func<TKey, TValue2> f2,
+    //            Func<TKey, TValue3> f3,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3>> store = null)
+    //            : base(isValid, stateFunc, f1, f2, f3, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
+    //            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3> getValueFactory,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3>> store = null)
+    //            : base(isValid, getValueFactory, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(TimeSpan expiration,
+    //            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3>> store = null)
+    //            : this((key, time) => time > DateTime.UtcNow, key => DateTime.UtcNow + expiration, f1, f2, f3, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(TimeSpan expiration,
+    //            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3> getValueFactory,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3>> store = null)
+    //            : base((key, time) => time > DateTime.UtcNow, getValueFactory, store)
+    //        {
+    //        }
+    //    }
+    //
+    //    public class ExpirableRepository<TKey, TValue1, TValue2, TValue3, TValue4> :
+    //        StatefulRepository<TKey, DateTime, TValue1, TValue2, TValue3, TValue4>,
+    //        IExpirableRepository<TKey, TValue1, TValue2, TValue3, TValue4>
+    //    {
+    //        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
+    //            Func<TKey, DateTime> stateFunc,
+    //            Func<TKey, TValue1> f1,
+    //            Func<TKey, TValue2> f2,
+    //            Func<TKey, TValue3> f3,
+    //            Func<TKey, TValue4> f4,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4>> store = null)
+    //            : base(isValid, stateFunc, f1, f2, f3, f4, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
+    //            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3, TValue4> getValueFactory,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4>> store = null)
+    //            : base(isValid, getValueFactory, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(TimeSpan expiration,
+    //            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
+    //            Func<TKey, TValue4> f4,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4>> store = null)
+    //            : this((key, time) => time > DateTime.UtcNow, key => DateTime.UtcNow + expiration, f1, f2, f3, f4, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(TimeSpan expiration,
+    //            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3, TValue4> getValueFactory,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4>> store = null)
+    //            : base((key, time) => time > DateTime.UtcNow, getValueFactory, store)
+    //        {
+    //        }
+    //    }
+    //
+    //    public class ExpirableRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> :
+    //        StatefulRepository<TKey, DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>,
+    //        IExpirableRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>
+    //    {
+    //        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
+    //            Func<TKey, DateTime> stateFunc,
+    //            Func<TKey, TValue1> f1,
+    //            Func<TKey, TValue2> f2,
+    //            Func<TKey, TValue3> f3,
+    //            Func<TKey, TValue4> f4,
+    //            Func<TKey, TValue5> f5,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
+    //            : base(isValid, stateFunc, f1, f2, f3, f4, f5, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
+    //            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3, TValue4, TValue5> getValueFactory,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
+    //            : base(isValid, getValueFactory, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(TimeSpan expiration,
+    //            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
+    //            Func<TKey, TValue4> f4, Func<TKey, TValue5> f5,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
+    //            : this((key, time) => time > DateTime.UtcNow, key => DateTime.UtcNow + expiration,
+    //                f1, f2, f3, f4, f5, store)
+    //        {
+    //        }
+    //
+    //        public ExpirableRepository(TimeSpan expiration,
+    //            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3, TValue4, TValue5> getValueFactory,
+    //            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
+    //            : base((key, time) => time > DateTime.UtcNow, getValueFactory, store)
+    //        {
+    //        }
+    //    }
 
-        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
-            GetValueDelegate<TKey, DateTime, TValue> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue>> store= null)
-            : base(isValid, getValueFactory, store)
-        {
-        }
-
-        public ExpirableRepository(TimeSpan expiration, 
-            Func<TKey, TValue> f1,
-            IDictionary<TKey, Tuple<DateTime, TValue>> store = null)
-            : this((key, time) => time > DateTime.UtcNow, key => DateTime.UtcNow+expiration, f1, store)
-        {
-        }
-
-        public ExpirableRepository(TimeSpan expiration,
-            GetValueDelegate<TKey, DateTime, TValue> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue>> store = null)
-            : base((key, time) => time > DateTime.UtcNow, getValueFactory, store)
-        {
-        }
-    }
-
-    public class ExpirableRepository<TKey, TValue1, TValue2> : 
-        StatefulRepository<TKey, DateTime, TValue1, TValue2>, IExpirableRepository<TKey, TValue1, TValue2>
-    {
-        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
-            Func<TKey, DateTime> stateFunc,
-            Func<TKey, TValue1> f1,
-            Func<TKey, TValue2> f2,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2>> store = null)
-            : base(isValid, stateFunc, f1, f2, store)
-        {
-        }
-
-        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
-            GetValueDelegate<TKey, DateTime, TValue1, TValue2> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2>> store = null)
-            : base(isValid, getValueFactory, store)
-        {
-        }
-
-        public ExpirableRepository(TimeSpan expiration,
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2>> store = null)
-            : this((key, time) => time > DateTime.UtcNow, key => DateTime.UtcNow + expiration, f1, f2, store)
-        {
-        }
-
-        public ExpirableRepository(TimeSpan expiration,
-            GetValueDelegate<TKey, DateTime, TValue1, TValue2> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2>> store = null)
-            : base((key, time) => time > DateTime.UtcNow, getValueFactory, store)
-        {
-        }
-    }
-
-    public class ExpirableRepository<TKey, TValue1, TValue2, TValue3> : 
-        StatefulRepository<TKey, DateTime, TValue1, TValue2, TValue3>,
-        IExpirableRepository<TKey, TValue1, TValue2, TValue3>
-    {
-        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
-            Func<TKey, DateTime> stateFunc,
-            Func<TKey, TValue1> f1,
-            Func<TKey, TValue2> f2,
-            Func<TKey, TValue3> f3,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3>> store = null)
-            : base(isValid, stateFunc, f1, f2, f3, store)
-        {
-        }
-
-        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
-            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3>> store = null)
-            : base(isValid, getValueFactory, store)
-        {
-        }
-
-        public ExpirableRepository(TimeSpan expiration,
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3>> store = null)
-            : this((key, time) => time > DateTime.UtcNow, key => DateTime.UtcNow + expiration, f1, f2, f3, store)
-        {
-        }
-
-        public ExpirableRepository(TimeSpan expiration,
-            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3>> store = null)
-            : base((key, time) => time > DateTime.UtcNow, getValueFactory, store)
-        {
-        }
-    }
-
-    public class ExpirableRepository<TKey, TValue1, TValue2, TValue3, TValue4> : 
-        StatefulRepository<TKey, DateTime, TValue1, TValue2, TValue3, TValue4>,
-        IExpirableRepository<TKey, TValue1, TValue2, TValue3, TValue4>
-    {
-        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
-            Func<TKey, DateTime> stateFunc,
-            Func<TKey, TValue1> f1,
-            Func<TKey, TValue2> f2,
-            Func<TKey, TValue3> f3,
-            Func<TKey, TValue4> f4,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4>> store = null)
-            : base(isValid, stateFunc, f1, f2, f3, f4, store)
-        {
-        }
-
-        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
-            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3, TValue4> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4>> store = null)
-            : base(isValid, getValueFactory, store)
-        {
-        }
-
-        public ExpirableRepository(TimeSpan expiration,
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-            Func<TKey, TValue4> f4,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4>> store = null)
-            : this((key, time) => time > DateTime.UtcNow, key => DateTime.UtcNow + expiration, f1, f2, f3, f4, store)
-        {
-        }
-
-        public ExpirableRepository(TimeSpan expiration,
-            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3, TValue4> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4>> store = null)
-            : base((key, time) => time > DateTime.UtcNow, getValueFactory, store)
-        {
-        }
-    }
-
-    public class ExpirableRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> : 
-        StatefulRepository<TKey, DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>,
-        IExpirableRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>
-    {
-        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
-            Func<TKey, DateTime> stateFunc,
-            Func<TKey, TValue1> f1,
-            Func<TKey, TValue2> f2,
-            Func<TKey, TValue3> f3,
-            Func<TKey, TValue4> f4,
-            Func<TKey, TValue5> f5,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
-            : base(isValid, stateFunc, f1, f2, f3, f4, f5, store)
-        {
-        }
-
-        public ExpirableRepository(Func<TKey, DateTime, bool> isValid,
-            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3, TValue4, TValue5> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
-            : base(isValid, getValueFactory, store)
-        {
-        }
-
-        public ExpirableRepository(TimeSpan expiration,
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-            Func<TKey, TValue4> f4, Func<TKey, TValue5> f5,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
-            : this((key, time) => time > DateTime.UtcNow, key => DateTime.UtcNow + expiration, 
-                f1, f2, f3, f4, f5, store)
-        {
-        }
-
-        public ExpirableRepository(TimeSpan expiration,
-            GetValueDelegate<TKey, DateTime, TValue1, TValue2, TValue3, TValue4, TValue5> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
-            : base((key, time) => time > DateTime.UtcNow, getValueFactory, store)
-        {
-        }
-    }
-
-    public class ExpirableRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> : 
+    public class ExpirableRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> :
         StatefulRepository<TKey, DateTime, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>,
         IExpirableRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>
     {
@@ -211,7 +210,8 @@ namespace DataCenter.Common
                 }
                 catch (Exception)
                 {
-                    return ResetAll(key, out timestamp, out v1, out v2, out v3, out v4, out v5, out v6);
+                    return FactoryWrapper<TKey, DateTime, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>
+                        .ResetAll(key, out timestamp, out v1, out v2, out v3, out v4, out v5, out v6);
                 }
             }
         }
@@ -248,8 +248,8 @@ namespace DataCenter.Common
             Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
             Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, Func<TKey, TValue6> f6,
             IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>> store = null)
-            : this((key, time) => time > DateTime.UtcNow, 
-                key => DateTime.UtcNow + expiration, 
+            : this((key, time) => time > DateTime.UtcNow,
+                key => DateTime.UtcNow + expiration,
                 f1, f2, f3, f4, f5, f6, store)
         {
         }
@@ -260,6 +260,6 @@ namespace DataCenter.Common
             : base((key, time) => time > DateTime.UtcNow, Wrap(expiration, getValueFactory), store)
         {
         }
-       
+
     }
 }

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 namespace DataCenter.Common
 {
@@ -135,118 +132,6 @@ namespace DataCenter.Common
 
     public class Repository<TKey, TValue1, TValue2> : Repository<TKey>, IRepository<TKey, TValue1, TValue2>
     {
-        protected class FactoryWrapper
-        {
-            private readonly Func<TKey, TValue1> _fun1;
-            private readonly Func<TKey, TValue2> _fun2;
-            private readonly GetValueDelegate<TKey, TValue1, TValue2> getAllValues;
-
-            internal FactoryWrapper(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2)
-            {
-                _fun1 = f1 ?? throw new ArgumentNullException(nameof(f1));
-                _fun2 = f2 ?? throw new ArgumentNullException(nameof(f2));
-                if (ExecuteParallelly)
-                    getAllValues = runParallel;
-                else
-                    getAllValues = runSequential;
-            }
-
-            internal FactoryWrapper(GetValueDelegate<TKey, TValue1, TValue2> getValues)
-            {
-                _fun1 = null;
-                _fun2 = null;
-                getAllValues = getValues ?? throw new ArgumentNullException(nameof(getValues));
-            }
-
-            internal bool runSequential(TKey key, out TValue1 value1, out TValue2 value2)
-            {
-                try
-                {
-                    value1 = _fun1.Invoke(key);
-                    value2 = _fun2.Invoke(key);
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e.Message);
-                    return ResetAll(key, out value1, out value2);
-                }
-            }
-
-            internal bool runParallel(TKey key, out TValue1 value1, out TValue2 value2)
-            {
-                TValue1 v1 = default(TValue1);
-                TValue2 v2 = default(TValue2);
-
-                try
-                {
-                    Parallel.Invoke(
-                        () => v1 = _fun1.Invoke(key),
-                        () => v2 = _fun2.Invoke(key)
-                    );
-                    return true;
-                }
-                catch (AggregateException ex)
-                {
-                    ex.Handle(exception =>
-                    {
-                        Trace.WriteLine(exception);
-                        return true; //handled
-                    });
-                    return false;
-                }
-                catch (Exception e)
-                {
-                    return false;
-                }
-                finally
-                {
-                    value1 = v1;
-                    value2 = v2;
-                }
-            }
-
-            internal bool runTogether(TKey key, out TValue1 value1, out TValue2 value2)
-            {
-                try
-                {
-                    return getAllValues.Invoke(key, out value1, out value2);
-                }
-                catch (Exception)
-                {
-                    return ResetAll(key, out value1, out value2);
-                }
-            }
-        }
-
-        #region Static methods
-
-        public static bool ResetAll(TKey key, out TValue1 value1, out TValue2 value2)
-        {
-            value1 = default(TValue1);
-            value2 = default(TValue2);
-            return false;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2> Wrap(
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2)
-        {
-            FactoryWrapper factory = new FactoryWrapper(f1, f2);
-            if (ExecuteParallelly)
-                return factory.runParallel;
-            else
-                return factory.runSequential;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2> Wrap(
-            GetValueDelegate<TKey, TValue1, TValue2> getValues)
-        {
-            FactoryWrapper factory = new FactoryWrapper(getValues);
-            return factory.runTogether;
-        }
-
-        #endregion
-
         #region Readonly Properties
 
         protected readonly IDictionary<TKey, Tuple<TValue1, TValue2>> repository;
@@ -260,7 +145,7 @@ namespace DataCenter.Common
             IDictionary<TKey, Tuple<TValue1, TValue2>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2>>();
-            DefaultFactory = Wrap(f1, f2);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2>.Wrap(f1, f2, ExecuteParallelly);
             initialize();
         }
 
@@ -268,7 +153,7 @@ namespace DataCenter.Common
             IDictionary<TKey, Tuple<TValue1, TValue2>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2>>();
-            DefaultFactory = Wrap(getValueFactory);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2>.Wrap(getValueFactory);
             initialize();
         }
 
@@ -297,7 +182,7 @@ namespace DataCenter.Common
                         repository.Add(key, tuple);
                     }
                 }
-                else 
+                else
                     tuple = repository[key];
             }
             catch (Exception e)
@@ -326,12 +211,12 @@ namespace DataCenter.Common
                     repository.Add(key, tuple);
                     return true;
                 }
-                return ResetAll(key, out value1, out value2);
+                return FactoryWrapper<TKey, TValue1, TValue2>.ResetAll(key, out value1, out value2);
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
-                return ResetAll(key, out value1, out value2);
+                return FactoryWrapper<TKey, TValue1, TValue2>.ResetAll(key, out value1, out value2);
             }
         }
 
@@ -349,126 +234,6 @@ namespace DataCenter.Common
     public class Repository<TKey, TValue1, TValue2, TValue3> : Repository<TKey>,
         IRepository<TKey, TValue1, TValue2, TValue3>
     {
-        protected class FactoryWrapper
-        {
-            private readonly Func<TKey, TValue1> _fun1;
-            private readonly Func<TKey, TValue2> _fun2;
-            private readonly Func<TKey, TValue3> _fun3;
-            private readonly GetValueDelegate<TKey, TValue1, TValue2, TValue3> getAllValues;
-
-            internal FactoryWrapper(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3)
-            {
-                _fun1 = f1 ?? throw new ArgumentNullException(nameof(f1));
-                _fun2 = f2 ?? throw new ArgumentNullException(nameof(f2));
-                _fun3 = f3 ?? throw new ArgumentNullException(nameof(f3));
-                if (ExecuteParallelly)
-                    getAllValues = runParallel;
-                else
-                    getAllValues = runSequential;
-            }
-
-            internal FactoryWrapper(GetValueDelegate<TKey, TValue1, TValue2, TValue3> getValues)
-            {
-                _fun1 = null;
-                _fun2 = null;
-                _fun3 = null;
-                getAllValues = getValues ?? throw new ArgumentNullException(nameof(getValues));
-            }
-
-            internal bool runSequential(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3)
-            {
-                try
-                {
-                    v1 = _fun1.Invoke(key);
-                    v2 = _fun2.Invoke(key);
-                    v3 = _fun3.Invoke(key);
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e.Message);
-                    return ResetAll(key, out v1, out v2, out v3);
-                }
-            }
-
-            internal bool runParallel(TKey key, out TValue1 value1, out TValue2 value2, out TValue3 value3)
-            {
-                TValue1 v1 = default(TValue1);
-                TValue2 v2 = default(TValue2);
-                TValue3 v3 = default(TValue3);
-
-                try
-                {
-                    Parallel.Invoke(
-                        () => v1 = _fun1.Invoke(key),
-                        () => v2 = _fun2.Invoke(key),
-                        () => v3 = _fun3.Invoke(key)
-                    );
-                    return true;
-                }
-                catch (AggregateException ex)
-                {
-                    ex.Handle(exception =>
-                    {
-                        Trace.WriteLine(exception);
-                        return true; //handled
-                    });
-                    return false;
-                }
-                catch (Exception e)
-                {
-                    return false;
-                }
-                finally
-                {
-                    value1 = v1;
-                    value2 = v2;
-                    value3 = v3;
-                }
-            }
-
-            internal bool runTogether(TKey key, out TValue1 value1, out TValue2 value2, out TValue3 value3)
-            {
-                try
-                {
-                    return getAllValues.Invoke(key, out value1, out value2, out value3);
-                }
-                catch (Exception)
-                {
-                    return ResetAll(key, out value1, out value2, out value3);
-                }
-            }
-        }
-
-        #region Static methods
-
-        public static bool ResetAll(TKey key, out TValue1 value1, out TValue2 value2, out TValue3 value3)
-        {
-            value1 = default(TValue1);
-            value2 = default(TValue2);
-            value3 = default(TValue3);
-            return false;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2, TValue3> Wrap(
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3)
-        {
-            FactoryWrapper factory = new FactoryWrapper(f1, f2, f3);
-            if (ExecuteParallelly)
-                return factory.runParallel;
-            else
-                return factory.runSequential;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2, TValue3> Wrap(
-            GetValueDelegate<TKey, TValue1, TValue2, TValue3> getValues)
-        {
-            FactoryWrapper factory = new FactoryWrapper(getValues);
-            return factory.runTogether;
-        }
-
-        #endregion
-
         #region Readonly Properties
 
         protected readonly IDictionary<TKey, Tuple<TValue1, TValue2, TValue3>> repository;
@@ -482,7 +247,7 @@ namespace DataCenter.Common
             IDictionary<TKey, Tuple<TValue1, TValue2, TValue3>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3>>();
-            DefaultFactory = Wrap(f1, f2, f3);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3>.Wrap(f1, f2, f3);
             initialize();
         }
 
@@ -490,7 +255,7 @@ namespace DataCenter.Common
             IDictionary<TKey, Tuple<TValue1, TValue2, TValue3>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3>>();
-            DefaultFactory = Wrap(getValueFactory);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3>.Wrap(getValueFactory);
             initialize();
         }
 
@@ -550,16 +315,16 @@ namespace DataCenter.Common
                     repository.Add(key, tuple);
                     return true;
                 }
-                return ResetAll(key, out v1, out v2, out v3);
+                return FactoryWrapper<TKey, TValue1, TValue2, TValue3>.ResetAll(key, out v1, out v2, out v3);
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
-                return ResetAll(key, out v1, out v2, out v3);
+                return FactoryWrapper<TKey, TValue1, TValue2, TValue3>.ResetAll(key, out v1, out v2, out v3);
             }
         }
 
-        public virtual Tuple<TValue1, TValue2, TValue3> this[TKey key] 
+        public virtual Tuple<TValue1, TValue2, TValue3> this[TKey key]
             => Get(key, DefaultFactory);
 
         public virtual Tuple<TValue1, TValue2, TValue3> Get(TKey key) => Get(key, DefaultFactory);
@@ -579,138 +344,6 @@ namespace DataCenter.Common
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4>
         : Repository<TKey>, IRepository<TKey, TValue1, TValue2, TValue3, TValue4>
     {
-        protected class FactoryWrapper
-        {
-            private readonly Func<TKey, TValue1> _fun1;
-            private readonly Func<TKey, TValue2> _fun2;
-            private readonly Func<TKey, TValue3> _fun3;
-            private readonly Func<TKey, TValue4> _fun4;
-            private readonly GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> getAllValues;
-
-            internal FactoryWrapper(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-                Func<TKey, TValue4> f4)
-            {
-                _fun1 = f1 ?? throw new ArgumentNullException(nameof(f1));
-                _fun2 = f2 ?? throw new ArgumentNullException(nameof(f2));
-                _fun3 = f3 ?? throw new ArgumentNullException(nameof(f3));
-                _fun4 = f4 ?? throw new ArgumentNullException(nameof(f4));
-                if (ExecuteParallelly)
-                    getAllValues = runParallel;
-                else
-                    getAllValues = runSequential;
-            }
-
-            internal FactoryWrapper(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> getValues)
-            {
-                _fun1 = null;
-                _fun2 = null;
-                _fun3 = null;
-                _fun4 = null;
-                getAllValues = getValues ?? throw new ArgumentNullException(nameof(getValues));
-            }
-
-            internal bool runSequential(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
-                out TValue4 v4)
-            {
-                try
-                {
-                    v1 = _fun1.Invoke(key);
-                    v2 = _fun2.Invoke(key);
-                    v3 = _fun3.Invoke(key);
-                    v4 = _fun4.Invoke(key);
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e.Message);
-                    return ResetAll(key, out v1, out v2, out v3, out v4);
-                }
-            }
-
-            internal bool runParallel(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
-                out TValue4 v4)
-            {
-                TValue1 _v1 = default(TValue1);
-                TValue2 _v2 = default(TValue2);
-                TValue3 _v3 = default(TValue3);
-                TValue4 _v4 = default(TValue4);
-
-                try
-                {
-                    Parallel.Invoke(
-                        () => _v1 = _fun1.Invoke(key),
-                        () => _v2 = _fun2.Invoke(key),
-                        () => _v3 = _fun3.Invoke(key),
-                        () => _v4 = _fun4.Invoke(key)
-                    );
-                    return true;
-                }
-                catch (AggregateException ex)
-                {
-                    ex.Handle(exception =>
-                    {
-                        Trace.WriteLine(exception);
-                        return true; //handled
-                    });
-                    return false;
-                }
-                catch (Exception e)
-                {
-                    return false;
-                }
-                finally
-                {
-                    v1 = _v1;
-                    v2 = _v2;
-                    v3 = _v3;
-                    v4 = _v4;
-                }
-            }
-
-            internal bool runTogether(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4)
-            {
-                try
-                {
-                    return getAllValues.Invoke(key, out v1, out v2, out v3, out v4);
-                }
-                catch (Exception)
-                {
-                    return ResetAll(key, out v1, out v2, out v3, out v4);
-                }
-            }
-        }
-
-        #region Static methods
-
-        public static bool ResetAll(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4)
-        {
-            v1 = default(TValue1);
-            v2 = default(TValue2);
-            v3 = default(TValue3);
-            v4 = default(TValue4);
-            return false;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> Wrap(
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-            Func<TKey, TValue4> f4)
-        {
-            FactoryWrapper factory = new FactoryWrapper(f1, f2, f3, f4);
-            if (ExecuteParallelly)
-                return factory.runParallel;
-            else
-                return factory.runSequential;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> Wrap(
-            GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> getValues)
-        {
-            FactoryWrapper factory = new FactoryWrapper(getValues);
-            return factory.runTogether;
-        }
-
-        #endregion
-
         #region Readonly Properties
 
         protected readonly IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>> repository;
@@ -725,7 +358,7 @@ namespace DataCenter.Common
             IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>>();
-            DefaultFactory = Wrap(f1, f2, f3, f4);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4>.Wrap(f1, f2, f3, f4);
             initialize();
         }
 
@@ -733,7 +366,7 @@ namespace DataCenter.Common
             IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>>();
-            DefaultFactory = Wrap(getValueFactory);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4>.Wrap(getValueFactory);
             initialize();
         }
 
@@ -796,12 +429,12 @@ namespace DataCenter.Common
                     repository.Add(key, tuple);
                     return true;
                 }
-                return ResetAll(key, out v1, out v2, out v3, out v4);
+                return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4>.ResetAll(key, out v1, out v2, out v3, out v4);
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
-                return ResetAll(key, out v1, out v2, out v3, out v4);
+                return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4>.ResetAll(key, out v1, out v2, out v3, out v4);
             }
         }
 
@@ -823,147 +456,6 @@ namespace DataCenter.Common
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>
         : Repository<TKey>, IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>
     {
-        protected class FactoryWrapper
-        {
-            private readonly Func<TKey, TValue1> _fun1;
-            private readonly Func<TKey, TValue2> _fun2;
-            private readonly Func<TKey, TValue3> _fun3;
-            private readonly Func<TKey, TValue4> _fun4;
-            private readonly Func<TKey, TValue5> _fun5;
-            private readonly GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> getAllValues;
-
-            internal FactoryWrapper(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-                Func<TKey, TValue4> f4, Func<TKey, TValue5> f5)
-            {
-                _fun1 = f1 ?? throw new ArgumentNullException(nameof(f1));
-                _fun2 = f2 ?? throw new ArgumentNullException(nameof(f2));
-                _fun3 = f3 ?? throw new ArgumentNullException(nameof(f3));
-                _fun4 = f4 ?? throw new ArgumentNullException(nameof(f4));
-                _fun5 = f5 ?? throw new ArgumentNullException(nameof(f5));
-                if (ExecuteParallelly)
-                    getAllValues = runParallel;
-                else
-                    getAllValues = runSequential;
-            }
-
-            internal FactoryWrapper(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> getValues)
-            {
-                _fun1 = null;
-                _fun2 = null;
-                _fun3 = null;
-                _fun4 = null;
-                _fun5 = null;
-                getAllValues = getValues ?? throw new ArgumentNullException(nameof(getValues));
-            }
-
-            internal bool runSequential(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
-                out TValue4 v4, out TValue5 v5)
-            {
-                try
-                {
-                    v1 = _fun1.Invoke(key);
-                    v2 = _fun2.Invoke(key);
-                    v3 = _fun3.Invoke(key);
-                    v4 = _fun4.Invoke(key);
-                    v5 = _fun5.Invoke(key);
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e.Message);
-                    return ResetAll(key, out v1, out v2, out v3, out v4, out v5);
-                }
-            }
-
-            internal bool runParallel(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
-                out TValue4 v4, out TValue5 v5)
-            {
-                TValue1 _v1 = default(TValue1);
-                TValue2 _v2 = default(TValue2);
-                TValue3 _v3 = default(TValue3);
-                TValue4 _v4 = default(TValue4);
-                TValue5 _v5 = default(TValue5);
-
-                try
-                {
-                    Parallel.Invoke(
-                        () => _v1 = _fun1.Invoke(key),
-                        () => _v2 = _fun2.Invoke(key),
-                        () => _v3 = _fun3.Invoke(key),
-                        () => _v4 = _fun4.Invoke(key),
-                        () => _v5 = _fun5.Invoke(key)
-                    );
-                    return true;
-                }
-                catch (AggregateException ex)
-                {
-                    ex.Handle(exception =>
-                    {
-                        Trace.WriteLine(exception);
-                        return true; //handled
-                    });
-                    return false;
-                }
-                catch (Exception e)
-                {
-                    return false;
-                }
-                finally
-                {
-                    v1 = _v1;
-                    v2 = _v2;
-                    v3 = _v3;
-                    v4 = _v4;
-                    v5 = _v5;
-                }
-            }
-
-            internal bool runTogether(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5)
-            {
-                try
-                {
-                    return getAllValues.Invoke(key, out v1, out v2, out v3, out v4, out v5);
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e.Message);
-                    return ResetAll(key, out v1, out v2, out v3, out v4, out v5);
-                }
-            }
-        }
-
-        #region Static methods
-
-        public static bool ResetAll(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5)
-        {
-            v1 = default(TValue1);
-            v2 = default(TValue2);
-            v3 = default(TValue3);
-            v4 = default(TValue4);
-            v5 = default(TValue5);
-            return false;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> Wrap(
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-            Func<TKey, TValue4> f4, Func<TKey, TValue5> f5)
-        {
-            FactoryWrapper factory = new FactoryWrapper(f1, f2, f3, f4, f5);
-            if (ExecuteParallelly)
-                return factory.runParallel;
-            else
-                return factory.runSequential;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> Wrap(
-            GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> getValues)
-        {
-            FactoryWrapper factory = new FactoryWrapper(getValues);
-            return factory.runTogether;
-        }
-
-        #endregion
-
         #region Readonly Properties
 
         protected readonly IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>> repository;
@@ -974,11 +466,11 @@ namespace DataCenter.Common
 
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-            Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, 
+            Func<TKey, TValue4> f4, Func<TKey, TValue5> f5,
             IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>>();
-            DefaultFactory = Wrap(f1, f2, f3, f4, f5);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>.Wrap(f1, f2, f3, f4, f5);
             initialize();
         }
 
@@ -986,7 +478,7 @@ namespace DataCenter.Common
             IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>>();
-            DefaultFactory = Wrap(getValueFactory);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>.Wrap(getValueFactory);
             initialize();
         }
 
@@ -1050,12 +542,12 @@ namespace DataCenter.Common
                     repository.Add(key, tuple);
                     return true;
                 }
-                return ResetAll(key, out v1, out v2, out v3, out v4, out v5);
+                return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>.ResetAll(key, out v1, out v2, out v3, out v4, out v5);
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
-                return ResetAll(key, out v1, out v2, out v3, out v4, out v5);
+                return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>.ResetAll(key, out v1, out v2, out v3, out v4, out v5);
             }
         }
 
@@ -1078,154 +570,6 @@ namespace DataCenter.Common
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>
         : Repository<TKey>, IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>
     {
-        protected class FactoryWrapper
-        {
-            private readonly Func<TKey, TValue1> _fun1;
-            private readonly Func<TKey, TValue2> _fun2;
-            private readonly Func<TKey, TValue3> _fun3;
-            private readonly Func<TKey, TValue4> _fun4;
-            private readonly Func<TKey, TValue5> _fun5;
-            private readonly Func<TKey, TValue6> _fun6;
-            private readonly GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> getAllValues;
-
-            internal FactoryWrapper(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-                Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, Func<TKey, TValue6> f6)
-            {
-                _fun1 = f1 ?? throw new ArgumentNullException(nameof(f1));
-                _fun2 = f2 ?? throw new ArgumentNullException(nameof(f2));
-                _fun3 = f3 ?? throw new ArgumentNullException(nameof(f3));
-                _fun4 = f4 ?? throw new ArgumentNullException(nameof(f4));
-                _fun5 = f5 ?? throw new ArgumentNullException(nameof(f5));
-                _fun6 = f6 ?? throw new ArgumentNullException(nameof(f6));
-                if (ExecuteParallelly)
-                    getAllValues = runParallel;
-                else
-                    getAllValues = runSequential;
-            }
-
-            internal FactoryWrapper(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> getValues)
-            {
-                _fun1 = null;
-                _fun2 = null;
-                _fun3 = null;
-                _fun4 = null;
-                _fun5 = null;
-                _fun6 = null;
-                getAllValues = getValues ?? throw new ArgumentNullException(nameof(getValues));
-            }
-
-            internal bool runSequential(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
-                out TValue4 v4, out TValue5 v5, out TValue6 v6)
-            {
-                try
-                {
-                    v1 = _fun1.Invoke(key);
-                    v2 = _fun2.Invoke(key);
-                    v3 = _fun3.Invoke(key);
-                    v4 = _fun4.Invoke(key);
-                    v5 = _fun5.Invoke(key);
-                    v6 = _fun6.Invoke(key);
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e.Message);
-                    return ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6);
-                }
-            }
-
-            internal bool runParallel(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
-                out TValue4 v4, out TValue5 v5, out TValue6 v6)
-            {
-                TValue1 _v1 = default(TValue1);
-                TValue2 _v2 = default(TValue2);
-                TValue3 _v3 = default(TValue3);
-                TValue4 _v4 = default(TValue4);
-                TValue5 _v5 = default(TValue5);
-                TValue6 _v6 = default(TValue6);
-
-                try
-                {
-                    Parallel.Invoke(
-                        () => _v1 = _fun1.Invoke(key),
-                        () => _v2 = _fun2.Invoke(key),
-                        () => _v3 = _fun3.Invoke(key),
-                        () => _v4 = _fun4.Invoke(key),
-                        () => _v5 = _fun5.Invoke(key),
-                        () => _v6 = _fun6.Invoke(key)
-                    );
-                    return true;
-                }
-                catch (AggregateException ex)
-                {
-                    ex.Handle(exception =>
-                    {
-                        Trace.WriteLine(exception);
-                        return true; //handled
-                    });
-                    return false;
-                }
-                catch (Exception e)
-                {
-                    return false;
-                }
-                finally
-                {
-                    v1 = _v1;
-                    v2 = _v2;
-                    v3 = _v3;
-                    v4 = _v4;
-                    v5 = _v5;
-                    v6 = _v6;
-                }
-            }
-
-            internal bool runTogether(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out TValue6 v6)
-            {
-                try
-                {
-                    return getAllValues.Invoke(key, out v1, out v2, out v3, out v4, out v5, out v6);
-                }
-                catch (Exception)
-                {
-                    return ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6);
-                }
-            }
-        }
-
-        #region Static methods
-
-        public static bool ResetAll(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out TValue6 v6)
-        {
-            v1 = default(TValue1);
-            v2 = default(TValue2);
-            v3 = default(TValue3);
-            v4 = default(TValue4);
-            v5 = default(TValue5);
-            v6 = default(TValue6);
-            return false;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> Wrap(
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-            Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, Func<TKey, TValue6> f6)
-        {
-            FactoryWrapper factory = new FactoryWrapper(f1, f2, f3, f4, f5, f6);
-            if (ExecuteParallelly)
-                return factory.runParallel;
-            else
-                return factory.runSequential;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> Wrap(
-            GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> getValues)
-        {
-            FactoryWrapper factory = new FactoryWrapper(getValues);
-            return factory.runTogether;
-        }
-
-        #endregion
-
         #region Readonly Properties
 
         protected readonly IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>> repository;
@@ -1240,7 +584,7 @@ namespace DataCenter.Common
             IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>>();
-            DefaultFactory = Wrap(f1, f2, f3, f4, f5, f6);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>.Wrap(f1, f2, f3, f4, f5, f6);
             initialize();
         }
 
@@ -1248,7 +592,7 @@ namespace DataCenter.Common
             IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>>();
-            DefaultFactory = Wrap(getValueFactory);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>.Wrap(getValueFactory);
             initialize();
         }
 
@@ -1313,12 +657,14 @@ namespace DataCenter.Common
                     repository.Add(key, tuple);
                     return true;
                 }
-                return ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6);
+                return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>.
+                    ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6);
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
-                return ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6);
+                return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>.
+                    ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6);
             }
         }
 
@@ -1343,162 +689,6 @@ namespace DataCenter.Common
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>
         : Repository<TKey>, IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>
     {
-        protected class FactoryWrapper
-        {
-            private readonly Func<TKey, TValue1> _fun1;
-            private readonly Func<TKey, TValue2> _fun2;
-            private readonly Func<TKey, TValue3> _fun3;
-            private readonly Func<TKey, TValue4> _fun4;
-            private readonly Func<TKey, TValue5> _fun5;
-            private readonly Func<TKey, TValue6> _fun6;
-            private readonly Func<TKey, TValue7> _fun7;
-            private readonly GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> getAllValues;
-
-            internal FactoryWrapper(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-                Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, Func<TKey, TValue6> f6, Func<TKey, TValue7> f7)
-            {
-                _fun1 = f1 ?? throw new ArgumentNullException(nameof(f1));
-                _fun2 = f2 ?? throw new ArgumentNullException(nameof(f2));
-                _fun3 = f3 ?? throw new ArgumentNullException(nameof(f3));
-                _fun4 = f4 ?? throw new ArgumentNullException(nameof(f4));
-                _fun5 = f5 ?? throw new ArgumentNullException(nameof(f5));
-                _fun6 = f6 ?? throw new ArgumentNullException(nameof(f6));
-                _fun7 = f7 ?? throw new ArgumentNullException(nameof(f7));
-                if (ExecuteParallelly)
-                    getAllValues = runParallel;
-                else
-                    getAllValues = runSequential;
-            }
-
-            internal FactoryWrapper(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> getValues)
-            {
-                _fun1 = null;
-                _fun2 = null;
-                _fun3 = null;
-                _fun4 = null;
-                _fun5 = null;
-                _fun6 = null;
-                _fun7 = null;
-                getAllValues = getValues ?? throw new ArgumentNullException(nameof(getValues));
-            }
-
-            internal bool runSequential(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
-                out TValue4 v4, out TValue5 v5, out TValue6 v6, out TValue7 v7)
-            {
-                try
-                {
-                    v1 = _fun1.Invoke(key);
-                    v2 = _fun2.Invoke(key);
-                    v3 = _fun3.Invoke(key);
-                    v4 = _fun4.Invoke(key);
-                    v5 = _fun5.Invoke(key);
-                    v6 = _fun6.Invoke(key);
-                    v7 = _fun7.Invoke(key);
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e.Message);
-                    return ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6, out v7);
-                }
-            }
-
-            internal bool runParallel(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
-                out TValue4 v4, out TValue5 v5, out TValue6 v6, out TValue7 v7)
-            {
-                TValue1 _v1 = default(TValue1);
-                TValue2 _v2 = default(TValue2);
-                TValue3 _v3 = default(TValue3);
-                TValue4 _v4 = default(TValue4);
-                TValue5 _v5 = default(TValue5);
-                TValue6 _v6 = default(TValue6);
-                TValue7 _v7 = default(TValue7);
-
-                try
-                {
-                    Parallel.Invoke(
-                        () => _v1 = _fun1.Invoke(key),
-                        () => _v2 = _fun2.Invoke(key),
-                        () => _v3 = _fun3.Invoke(key),
-                        () => _v4 = _fun4.Invoke(key),
-                        () => _v5 = _fun5.Invoke(key),
-                        () => _v6 = _fun6.Invoke(key),
-                        () => _v7 = _fun7.Invoke(key)
-                    );
-                    return true;
-                }
-                catch (AggregateException ex)
-                {
-                    ex.Handle(exception =>
-                    {
-                        Trace.WriteLine(exception);
-                        return true; //handled
-                    });
-                    return false;
-                }
-                catch (Exception e)
-                {
-                    return false;
-                }
-                finally
-                {
-                    v1 = _v1;
-                    v2 = _v2;
-                    v3 = _v3;
-                    v4 = _v4;
-                    v5 = _v5;
-                    v6 = _v6;
-                    v7 = _v7;
-                }
-            }
-
-            internal bool runTogether(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out TValue6 v6, out TValue7 v7)
-            {
-                try
-                {
-                    return getAllValues.Invoke(key, out v1, out v2, out v3, out v4, out v5, out v6, out v7);
-                }
-                catch (Exception)
-                {
-                    return ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6, out v7);
-                }
-            }
-        }
-
-        #region Static methods
-
-        public static bool ResetAll(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out TValue6 v6, out TValue7 v7)
-        {
-            v1 = default(TValue1);
-            v2 = default(TValue2);
-            v3 = default(TValue3);
-            v4 = default(TValue4);
-            v5 = default(TValue5);
-            v6 = default(TValue6);
-            v7 = default(TValue7);
-            return false;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> Wrap(
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-            Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, Func<TKey, TValue6> f6, Func<TKey, TValue7> f7)
-        {
-            FactoryWrapper factory = new FactoryWrapper(f1, f2, f3, f4, f5, f6, f7);
-            if (ExecuteParallelly)
-                return factory.runParallel;
-            else
-                return factory.runSequential;
-        }
-
-        public static GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> Wrap(
-            GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> getValues)
-        {
-            FactoryWrapper factory = new FactoryWrapper(getValues);
-            return factory.runTogether;
-        }
-
-        #endregion
-
         #region Readonly Properties
 
         protected readonly IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>> repository;
@@ -1513,7 +703,7 @@ namespace DataCenter.Common
             IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>>();
-            DefaultFactory = Wrap(f1, f2, f3, f4, f5, f6, f7);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>.Wrap(f1, f2, f3, f4, f5, f6, f7);
             initialize();
         }
 
@@ -1521,7 +711,7 @@ namespace DataCenter.Common
             IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>> store = null)
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>>();
-            DefaultFactory = Wrap(getValueFactory);
+            DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>.Wrap(getValueFactory);
             initialize();
         }
 
@@ -1586,12 +776,14 @@ namespace DataCenter.Common
                     repository.Add(key, tuple);
                     return true;
                 }
-                return ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6, out v7);
+                return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>
+                    .ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6, out v7);
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
-                return ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6, out v7);
+                return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>
+                    .ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6, out v7);
             }
         }
 
