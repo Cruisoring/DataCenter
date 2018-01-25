@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace DataCenter.Common
@@ -13,12 +14,47 @@ namespace DataCenter.Common
         public static bool ExecuteParallelly = false;
     }
 
+    public abstract class Repository<TKey> : Repository, IRepository<TKey>
+    {
+        protected Action clear;
+        protected Func<TKey, bool> contains;
+        protected Func<TKey, bool> remove;
+        protected Func<ICollection<TKey>> getKeys;
+
+        public void Clear()
+        {
+            clear();
+        }
+
+        public bool Contains(TKey key)
+        {
+            return contains(key);
+        }
+
+        public bool Remove(TKey key)
+        {
+            return remove(key);
+        }
+
+        public int Remove(Predicate<TKey> predicate)
+        {
+            TKey[] matchedKeys = getKeys().Where(k => predicate(k)).ToArray();
+            int count = 0;
+            foreach (var key in matchedKeys)
+            {
+                if (remove(key))
+                    count++;
+            }
+            return count;
+        }
+    }
+
     /// <summary>
     /// Simple generic Repository implementation, not thread safe!!!
     /// </summary>
     /// <typeparam name="TKey">Type of the v1.</typeparam>
     /// <typeparam name="TValue">Type of the value.</typeparam>
-    public class Repository<TKey, TValue> : Repository, IRepository<TKey, TValue>
+    public class Repository<TKey, TValue> : Repository<TKey>, IRepository<TKey, TValue>
     {
         protected readonly IDictionary<TKey, TValue> repository;
         public Func<TKey, TValue> DefaultFactory { get; }
@@ -28,11 +64,15 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, TValue>();
             DefaultFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
+            initialize();
         }
 
-        public bool Contains(TKey key)
+        protected void initialize()
         {
-            return repository.ContainsKey(key);
+            contains = repository.ContainsKey;
+            clear = repository.Clear;
+            remove = repository.Remove;
+            getKeys = () => repository.Keys;
         }
 
         #region Get Operations
@@ -91,34 +131,9 @@ namespace DataCenter.Common
             return Get(key, DefaultFactory);
         }
         #endregion
-
-        #region Remove Operations
-        public bool Remove(TKey key)
-        {
-            return repository.Remove(key);
-        }
-
-        public int Remove(Predicate<TKey> predicate)
-        {
-            TKey[] matchedKeys = repository.Keys.Where(k => predicate(k)).ToArray();
-            int count = 0;
-            foreach (var key in matchedKeys)
-            {
-                if (Remove(key))
-                    count++;
-            }
-            return count;
-        }
-
-        public void Clear()
-        {
-            repository.Clear();
-        }
-        #endregion
-
     }
 
-    public class Repository<TKey, TValue1, TValue2> : Repository, IRepository<TKey, TValue1, TValue2>
+    public class Repository<TKey, TValue1, TValue2> : Repository<TKey>, IRepository<TKey, TValue1, TValue2>
     {
         protected class FactoryWrapper
         {
@@ -246,6 +261,7 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2>>();
             DefaultFactory = Wrap(f1, f2);
+            initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2> getValueFactory,
@@ -253,13 +269,17 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2>>();
             DefaultFactory = Wrap(getValueFactory);
+            initialize();
         }
 
         #endregion
 
-        public bool Contains(TKey key)
+        protected void initialize()
         {
-            return repository.ContainsKey(key);
+            contains = repository.ContainsKey;
+            clear = repository.Clear;
+            remove = repository.Remove;
+            getKeys = () => repository.Keys;
         }
 
         #region Retrieve Functions
@@ -324,35 +344,9 @@ namespace DataCenter.Common
         public virtual bool Get(TKey key, out TValue2 value2) => Get(key, out TValue1 value1, out value2);
 
         #endregion
-
-        #region Remove Functions
-
-        public bool Remove(TKey key)
-        {
-            return repository.Remove(key);
-        }
-
-        public int Remove(Predicate<TKey> predicate)
-        {
-            TKey[] matchedKeys = repository.Keys.Where(k => predicate(k)).ToArray();
-            int count = 0;
-            foreach (var key in matchedKeys)
-            {
-                if (Remove(key))
-                    count++;
-            }
-            return count;
-        }
-
-        public void Clear()
-        {
-            repository.Clear();
-        }
-
-        #endregion
     }
 
-    public class Repository<TKey, TValue1, TValue2, TValue3> : Repository,
+    public class Repository<TKey, TValue1, TValue2, TValue3> : Repository<TKey>,
         IRepository<TKey, TValue1, TValue2, TValue3>
     {
         protected class FactoryWrapper
@@ -489,6 +483,7 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3>>();
             DefaultFactory = Wrap(f1, f2, f3);
+            initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2, TValue3> getValueFactory,
@@ -496,13 +491,17 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3>>();
             DefaultFactory = Wrap(getValueFactory);
+            initialize();
         }
 
         #endregion
 
-        public bool Contains(TKey key)
+        protected void initialize()
         {
-            return repository.ContainsKey(key);
+            contains = repository.ContainsKey;
+            clear = repository.Clear;
+            remove = repository.Remove;
+            getKeys = () => repository.Keys;
         }
 
         #region Retrieve Functions
@@ -575,36 +574,10 @@ namespace DataCenter.Common
             => Get(key, out TValue1 value1, out TValue2 value2, out value3);
 
         #endregion
-
-        #region Remove Functions
-
-        public bool Remove(TKey key)
-        {
-            return repository.Remove(key);
-        }
-
-        public int Remove(Predicate<TKey> predicate)
-        {
-            TKey[] matchedKeys = repository.Keys.Where(k => predicate(k)).ToArray();
-            int count = 0;
-            foreach (var key in matchedKeys)
-            {
-                if (Remove(key))
-                    count++;
-            }
-            return count;
-        }
-
-        public void Clear()
-        {
-            repository.Clear();
-        }
-
-        #endregion
     }
 
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4>
-        : Repository, IRepository<TKey, TValue1, TValue2, TValue3, TValue4>
+        : Repository<TKey>, IRepository<TKey, TValue1, TValue2, TValue3, TValue4>
     {
         protected class FactoryWrapper
         {
@@ -753,6 +726,7 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>>();
             DefaultFactory = Wrap(f1, f2, f3, f4);
+            initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> getValueFactory,
@@ -760,13 +734,17 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>>();
             DefaultFactory = Wrap(getValueFactory);
+            initialize();
         }
 
         #endregion
 
-        public bool Contains(TKey key)
+        protected void initialize()
         {
-            return repository.ContainsKey(key);
+            contains = repository.ContainsKey;
+            clear = repository.Clear;
+            remove = repository.Remove;
+            getKeys = () => repository.Keys;
         }
 
 
@@ -840,36 +818,10 @@ namespace DataCenter.Common
         public virtual bool Get(TKey key, out TValue4 v4) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out v4);
 
         #endregion
-
-        #region Remove Functions
-
-        public bool Remove(TKey key)
-        {
-            return repository.Remove(key);
-        }
-
-        public int Remove(Predicate<TKey> predicate)
-        {
-            TKey[] matchedKeys = repository.Keys.Where(k => predicate(k)).ToArray();
-            int count = 0;
-            foreach (var key in matchedKeys)
-            {
-                if (Remove(key))
-                    count++;
-            }
-            return count;
-        }
-
-        public void Clear()
-        {
-            repository.Clear();
-        }
-
-        #endregion
     }
 
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>
-        : Repository, IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>
+        : Repository<TKey>, IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>
     {
         protected class FactoryWrapper
         {
@@ -1027,6 +979,7 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>>();
             DefaultFactory = Wrap(f1, f2, f3, f4, f5);
+            initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> getValueFactory,
@@ -1034,13 +987,17 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>>();
             DefaultFactory = Wrap(getValueFactory);
+            initialize();
         }
 
         #endregion
 
-        public bool Contains(TKey key)
+        protected void initialize()
         {
-            return repository.ContainsKey(key);
+            contains = repository.ContainsKey;
+            clear = repository.Clear;
+            remove = repository.Remove;
+            getKeys = () => repository.Keys;
         }
 
 
@@ -1116,36 +1073,10 @@ namespace DataCenter.Common
         public virtual bool Get(TKey key, out TValue5 v5) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out v5);
 
         #endregion
-
-        #region Remove Functions
-
-        public bool Remove(TKey key)
-        {
-            return repository.Remove(key);
-        }
-
-        public int Remove(Predicate<TKey> predicate)
-        {
-            TKey[] matchedKeys = repository.Keys.Where(k => predicate(k)).ToArray();
-            int count = 0;
-            foreach (var key in matchedKeys)
-            {
-                if (Remove(key))
-                    count++;
-            }
-            return count;
-        }
-
-        public void Clear()
-        {
-            repository.Clear();
-        }
-
-        #endregion
     }
 
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>
-        : Repository, IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>
+        : Repository<TKey>, IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>
     {
         protected class FactoryWrapper
         {
@@ -1310,6 +1241,7 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>>();
             DefaultFactory = Wrap(f1, f2, f3, f4, f5, f6);
+            initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> getValueFactory,
@@ -1317,15 +1249,18 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>>();
             DefaultFactory = Wrap(getValueFactory);
+            initialize();
         }
 
         #endregion
 
-        public bool Contains(TKey key)
+        protected void initialize()
         {
-            return repository.ContainsKey(key);
+            contains = repository.ContainsKey;
+            clear = repository.Clear;
+            remove = repository.Remove;
+            getKeys = () => repository.Keys;
         }
-
 
 
         #region Retrieve Functions
@@ -1403,35 +1338,10 @@ namespace DataCenter.Common
 
         #endregion
 
-        #region Remove Functions
-
-        public bool Remove(TKey key)
-        {
-            return repository.Remove(key);
-        }
-
-        public int Remove(Predicate<TKey> predicate)
-        {
-            TKey[] matchedKeys = repository.Keys.Where(k => predicate(k)).ToArray();
-            int count = 0;
-            foreach (var key in matchedKeys)
-            {
-                if (Remove(key))
-                    count++;
-            }
-            return count;
-        }
-
-        public void Clear()
-        {
-            repository.Clear();
-        }
-
-        #endregion
     }
 
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>
-        : Repository, IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>
+        : Repository<TKey>, IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>
     {
         protected class FactoryWrapper
         {
@@ -1604,6 +1514,7 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>>();
             DefaultFactory = Wrap(f1, f2, f3, f4, f5, f6, f7);
+            initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> getValueFactory,
@@ -1611,16 +1522,18 @@ namespace DataCenter.Common
         {
             repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>>();
             DefaultFactory = Wrap(getValueFactory);
+            initialize();
         }
 
         #endregion
 
-        public bool Contains(TKey key)
+        protected void initialize()
         {
-            return repository.ContainsKey(key);
+            contains = repository.ContainsKey;
+            clear = repository.Clear;
+            remove = repository.Remove;
+            getKeys = () => repository.Keys;
         }
-
-
 
         #region Retrieve Functions
 
@@ -1696,32 +1609,6 @@ namespace DataCenter.Common
         public virtual bool Get(TKey key, out TValue5 v5) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out v5, out TValue6 v6, out TValue7 v7);
         public virtual bool Get(TKey key, out TValue6 v6) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out v6, out TValue7 v7);
         public virtual bool Get(TKey key, out TValue7 v7) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out TValue6 v6, out v7);
-
-        #endregion
-
-        #region Remove Functions
-
-        public bool Remove(TKey key)
-        {
-            return repository.Remove(key);
-        }
-
-        public int Remove(Predicate<TKey> predicate)
-        {
-            TKey[] matchedKeys = repository.Keys.Where(k => predicate(k)).ToArray();
-            int count = 0;
-            foreach (var key in matchedKeys)
-            {
-                if (Remove(key))
-                    count++;
-            }
-            return count;
-        }
-
-        public void Clear()
-        {
-            repository.Clear();
-        }
 
         #endregion
     }

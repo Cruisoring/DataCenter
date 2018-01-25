@@ -12,7 +12,6 @@ namespace DataCenter.Common
         int Remove(Predicate<TKey> predicate);
 
         void Clear();
-
     }
 
     public interface IRepository<TKey, TValue> : IRepository<TKey>
