@@ -522,7 +522,7 @@ namespace DataCenter.Common
             Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, Func<TKey, TValue6> f6)
             : base(f1, f2, f3, f4, f5)
         {
-            _fun5 = f5 ?? throw new ArgumentNullException(nameof(f5));
+            _fun6 = f6 ?? throw new ArgumentNullException(nameof(f6));
             if (Repository.ExecuteParallelly)
                 getAllValues = runParallel;
             else
@@ -649,7 +649,7 @@ namespace DataCenter.Common
 
         internal FactoryWrapper() : base()
         {
-            _fun5 = null;
+            _fun7 = null;
             getAllValues = null;
         }
 
@@ -657,7 +657,7 @@ namespace DataCenter.Common
             Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, Func<TKey, TValue6> f6, Func<TKey, TValue7> f7)
             : base(f1, f2, f3, f4, f5, f6)
         {
-            _fun5 = f5 ?? throw new ArgumentNullException(nameof(f5));
+            _fun7 = f7 ?? throw new ArgumentNullException(nameof(f7));
             if (Repository.ExecuteParallelly)
                 getAllValues = runParallel;
             else

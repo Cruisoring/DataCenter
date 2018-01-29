@@ -9,6 +9,7 @@
     <Import_RootNamespace>DataCenter.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ExpirableFactoryWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExpirableRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FactoryWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GetValueDelegate.cs" />

@@ -127,7 +127,7 @@ namespace DataCenter.Common
         {
             return Get(key, DefaultFactory);
         }
-        #endregion
+        #endregion Get Operations
     }
 
     public class Repository<TKey, TValue1, TValue2> : Repository<TKey>, IRepository<TKey, TValue1, TValue2>
@@ -138,7 +138,7 @@ namespace DataCenter.Common
 
         public GetValueDelegate<TKey, TValue1, TValue2> DefaultFactory { get; }
 
-        #endregion
+        #endregion Readonly Properties
 
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2,
@@ -157,7 +157,7 @@ namespace DataCenter.Common
             initialize();
         }
 
-        #endregion
+        #endregion Constructors
 
         protected void initialize()
         {
@@ -228,7 +228,7 @@ namespace DataCenter.Common
 
         public virtual bool Get(TKey key, out TValue2 value2) => Get(key, out TValue1 value1, out value2);
 
-        #endregion
+        #endregion Retrieve Functions
     }
 
     public class Repository<TKey, TValue1, TValue2, TValue3> : Repository<TKey>,
@@ -240,7 +240,7 @@ namespace DataCenter.Common
 
         public GetValueDelegate<TKey, TValue1, TValue2, TValue3> DefaultFactory { get; }
 
-        #endregion
+        #endregion Readonly Properties
 
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
@@ -259,7 +259,7 @@ namespace DataCenter.Common
             initialize();
         }
 
-        #endregion
+        #endregion Constructors
 
         protected void initialize()
         {
@@ -338,7 +338,7 @@ namespace DataCenter.Common
         public virtual bool Get(TKey key, out TValue3 value3)
             => Get(key, out TValue1 value1, out TValue2 value2, out value3);
 
-        #endregion
+        #endregion Retrieve Functions
     }
 
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4>
@@ -350,7 +350,7 @@ namespace DataCenter.Common
 
         public GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> DefaultFactory { get; }
 
-        #endregion
+        #endregion Readonly Properties
 
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
@@ -370,7 +370,7 @@ namespace DataCenter.Common
             initialize();
         }
 
-        #endregion
+        #endregion Constructors
 
         protected void initialize()
         {
@@ -379,7 +379,6 @@ namespace DataCenter.Common
             remove = repository.Remove;
             getKeys = () => repository.Keys;
         }
-
 
         #region Retrieve Functions
 
@@ -450,7 +449,7 @@ namespace DataCenter.Common
 
         public virtual bool Get(TKey key, out TValue4 v4) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out v4);
 
-        #endregion
+        #endregion Retrieve Functions
     }
 
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>
@@ -462,7 +461,7 @@ namespace DataCenter.Common
 
         public GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> DefaultFactory { get; }
 
-        #endregion
+        #endregion Readonly Properties
 
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
@@ -482,7 +481,7 @@ namespace DataCenter.Common
             initialize();
         }
 
-        #endregion
+        #endregion Constructors
 
         protected void initialize()
         {
@@ -491,7 +490,6 @@ namespace DataCenter.Common
             remove = repository.Remove;
             getKeys = () => repository.Keys;
         }
-
 
         #region Retrieve Functions
 
@@ -564,7 +562,7 @@ namespace DataCenter.Common
         public virtual bool Get(TKey key, out TValue4 v4) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out v4, out TValue5 v5);
         public virtual bool Get(TKey key, out TValue5 v5) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out v5);
 
-        #endregion
+        #endregion Retrieve Functions
     }
 
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>
@@ -576,7 +574,7 @@ namespace DataCenter.Common
 
         public GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> DefaultFactory { get; }
 
-        #endregion
+        #endregion Readonly Properties
 
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
@@ -596,7 +594,7 @@ namespace DataCenter.Common
             initialize();
         }
 
-        #endregion
+        #endregion Constructors
 
         protected void initialize()
         {
@@ -605,7 +603,6 @@ namespace DataCenter.Common
             remove = repository.Remove;
             getKeys = () => repository.Keys;
         }
-
 
         #region Retrieve Functions
 
@@ -682,8 +679,7 @@ namespace DataCenter.Common
         public virtual bool Get(TKey key, out TValue5 v5) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out v5, out TValue6 v6);
         public virtual bool Get(TKey key, out TValue6 v6) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out v6);
 
-        #endregion
-
+        #endregion Retrieve Functions
     }
 
     public class Repository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>
@@ -695,7 +691,7 @@ namespace DataCenter.Common
 
         public GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> DefaultFactory { get; }
 
-        #endregion
+        #endregion Readonly Properties
 
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
@@ -715,7 +711,7 @@ namespace DataCenter.Common
             initialize();
         }
 
-        #endregion
+        #endregion Constructors
 
         protected void initialize()
         {
@@ -802,6 +798,6 @@ namespace DataCenter.Common
         public virtual bool Get(TKey key, out TValue6 v6) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out v6, out TValue7 v7);
         public virtual bool Get(TKey key, out TValue7 v7) => Get(key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out TValue6 v6, out v7);
 
-        #endregion
+        #endregion Retrieve Functions
     }
 }

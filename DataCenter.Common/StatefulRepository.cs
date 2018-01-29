@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DataCenter.Common
 {
-    public class StatefulRepository<TKey, TState, TValue> : 
+    public class StatefulRepository<TKey, TState, TValue> :
         Repository<TKey, TState, TValue>, IStatefulRepository<TKey, TState, TValue>
     {
         protected Func<TKey, TState, bool> isValid { get; }
 
-        public StatefulRepository(Func<TKey, TState, bool> isValid, 
+        public StatefulRepository(Func<TKey, TState, bool> isValid,
             Func<TKey, TState> stateFunc,
             Func<TKey, TValue> f1,
-            IDictionary<TKey, Tuple<TState, TValue>> store=null)
+            IDictionary<TKey, Tuple<TState, TValue>> store = null)
             : base(stateFunc, f1, store)
         {
             this.isValid = isValid ?? throw new ArgumentNullException(nameof(isValid));
@@ -21,7 +20,7 @@ namespace DataCenter.Common
 
         public StatefulRepository(Func<TKey, TState, bool> isValid,
             GetValueDelegate<TKey, TState, TValue> getValueFactory,
-            IDictionary<TKey, Tuple<TState, TValue>> store=null)
+            IDictionary<TKey, Tuple<TState, TValue>> store = null)
             : base(getValueFactory, store)
         {
             this.isValid = isValid ?? throw new ArgumentNullException(nameof(isValid));
@@ -76,7 +75,7 @@ namespace DataCenter.Common
         }
     }
 
-    public class StatefulRepository<TKey, TState, TValue1, TValue2> : 
+    public class StatefulRepository<TKey, TState, TValue1, TValue2> :
         Repository<TKey, TState, TValue1, TValue2>, IStatefulRepository<TKey, TState, TValue1, TValue2>
     {
         protected Func<TKey, TState, bool> isValid { get; }
@@ -146,8 +145,8 @@ namespace DataCenter.Common
         }
     }
 
-    public class StatefulRepository<TKey, TState, TValue1, TValue2, TValue3> : 
-        Repository<TKey, TState, TValue1, TValue2, TValue3>, 
+    public class StatefulRepository<TKey, TState, TValue1, TValue2, TValue3> :
+        Repository<TKey, TState, TValue1, TValue2, TValue3>,
         IStatefulRepository<TKey, TState, TValue1, TValue2, TValue3>
     {
         protected Func<TKey, TState, bool> isValid { get; }
@@ -217,8 +216,8 @@ namespace DataCenter.Common
         }
     }
 
-    public class StatefulRepository<TKey, TState, TValue1, TValue2, TValue3, TValue4> : 
-        Repository<TKey, TState, TValue1, TValue2, TValue3, TValue4>, 
+    public class StatefulRepository<TKey, TState, TValue1, TValue2, TValue3, TValue4> :
+        Repository<TKey, TState, TValue1, TValue2, TValue3, TValue4>,
         IStatefulRepository<TKey, TState, TValue1, TValue2, TValue3, TValue4>
     {
         protected Func<TKey, TState, bool> isValid { get; }
@@ -238,6 +237,7 @@ namespace DataCenter.Common
         {
             this.isValid = isValid ?? throw new ArgumentNullException(nameof(isValid));
         }
+
         public virtual bool IsValid(TKey key)
         {
             if (!repository.ContainsKey(key))
@@ -287,14 +287,14 @@ namespace DataCenter.Common
         }
     }
 
-    public class StatefulRepository<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5> : 
-        Repository<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5>, 
+    public class StatefulRepository<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5> :
+        Repository<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5>,
         IStatefulRepository<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5>
     {
         protected Func<TKey, TState, bool> isValid { get; }
 
         public StatefulRepository(Func<TKey, TState, bool> isValid, Func<TKey, TState> stateFunc,
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3, 
+            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
             Func<TKey, TValue4> f4, Func<TKey, TValue5> f5,
             IDictionary<TKey, Tuple<TState, TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
             : base(stateFunc, f1, f2, f3, f4, f5, store)
@@ -359,14 +359,14 @@ namespace DataCenter.Common
         }
     }
 
-    public class StatefulRepository<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> : 
-        Repository<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>, 
+    public class StatefulRepository<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> :
+        Repository<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>,
         IStatefulRepository<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>
     {
         protected Func<TKey, TState, bool> isValid { get; }
 
         public StatefulRepository(Func<TKey, TState, bool> isValid, Func<TKey, TState> stateFunc,
-            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3, 
+            Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
             Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, Func<TKey, TValue6> f6,
             IDictionary<TKey, Tuple<TState, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>> store = null)
             : base(stateFunc, f1, f2, f3, f4, f5, f6, store)

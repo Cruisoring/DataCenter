@@ -8,40 +8,17 @@ namespace DataCenter.UnitTest
     [TestClass]
     public class ExpirableRepositoryTests
     {
-        private static int funcDurationMills = 0;
-        public static Func<DateTime, string> fShortString = t =>
-        {
-            Thread.Sleep(funcDurationMills); return t.ToShortDateString();
-        };
+        public static Func<DateTime, string> fShortString = t => t.ToShortDateString();
 
-        public static Func<DateTime, int> fDay = t =>
-        {
-            Thread.Sleep(funcDurationMills);
-            return t.Day;
-        };
-        public static Func<DateTime, long> fTicks = t =>
-        {
-            Thread.Sleep(funcDurationMills);
-            return t.Ticks;
-        };
+        public static Func<DateTime, int> fDay = t => t.Day;
 
-        public static Func<DateTime, DayOfWeek> fDayOfWeek = t =>
-        {
-            Thread.Sleep(funcDurationMills);
-            return t.DayOfWeek;
-        };
+        public static Func<DateTime, long> fTicks = t => t.Ticks;
 
-        public static Func<DateTime, DateTime> fDate = t =>
-        {
-            Thread.Sleep(funcDurationMills);
-            return t.Date;
-        };
+        public static Func<DateTime, DayOfWeek> fDayOfWeek = t => t.DayOfWeek;
 
-        public static Func<DateTime, TimeSpan> fTimeOfDay = t =>
-        {
-            Thread.Sleep(funcDurationMills);
-            return t.TimeOfDay;
-        };
+        public static Func<DateTime, DateTime> fDate = t => t.Date;
+
+        public static Func<DateTime, TimeSpan> fTimeOfDay = t => t.TimeOfDay;
 
         public static bool getDateTimeDetails(DateTime t, out String shortString, out int day,
             out long ticks, out DayOfWeek dayOfWeek, out DateTime date, out TimeSpan timeOfDay)
@@ -59,8 +36,8 @@ namespace DataCenter.UnitTest
         public void TestExpirableRepository_WithTimeSpan_ExpirationAsExpected()
         {
             ExpirableRepository<DateTime, String, int, long, DayOfWeek, DateTime, TimeSpan> repository =
-                new ExpirableRepository<DateTime, string, int, long, DayOfWeek, DateTime, TimeSpan>(
-                    TimeSpan.FromSeconds(1), getDateTimeDetails);
+                new ExpirableRepository<DateTime, String, int, long, DayOfWeek, DateTime, TimeSpan>(
+                    TimeSpan.FromSeconds(1), fShortString, fDay, fTicks, fDayOfWeek, fDate, fTimeOfDay);
 
             var firstValue = repository.Get(DateTime.Today);
             Thread.Sleep(TimeSpan.FromMilliseconds(200));
