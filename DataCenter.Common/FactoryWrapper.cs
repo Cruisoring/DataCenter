@@ -67,7 +67,7 @@ namespace DataCenter.Common
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return ResetAll(key, out v1, out v2);
             }
         }
@@ -89,7 +89,7 @@ namespace DataCenter.Common
             {
                 ex.Handle(exception =>
                 {
-                    Trace.WriteLine(exception);
+                    Console.WriteLine(exception);
                     return true; //handled
                 });
                 return false;
@@ -178,7 +178,7 @@ namespace DataCenter.Common
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return ResetAll(key, out v1, out v2, out v3);
             }
         }
@@ -202,7 +202,7 @@ namespace DataCenter.Common
             {
                 ex.Handle(exception =>
                 {
-                    Trace.WriteLine(exception);
+                    Console.WriteLine(exception);
                     return true; //handled
                 });
                 return false;
@@ -293,7 +293,7 @@ namespace DataCenter.Common
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return ResetAll(key, out v1, out v2, out v3, out v4);
             }
         }
@@ -319,7 +319,7 @@ namespace DataCenter.Common
             {
                 ex.Handle(exception =>
                 {
-                    Trace.WriteLine(exception);
+                    Console.WriteLine(exception);
                     return true; //handled
                 });
                 return false;
@@ -416,7 +416,7 @@ namespace DataCenter.Common
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return ResetAll(key, out v1, out v2, out v3, out v4, out v5);
             }
         }
@@ -445,7 +445,7 @@ namespace DataCenter.Common
             {
                 ex.Handle(exception =>
                 {
-                    Trace.WriteLine(exception);
+                    Console.WriteLine(exception);
                     return true; //handled
                 });
                 return false;
@@ -545,7 +545,7 @@ namespace DataCenter.Common
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6);
             }
         }
@@ -576,7 +576,7 @@ namespace DataCenter.Common
             {
                 ex.Handle(exception =>
                 {
-                    Trace.WriteLine(exception);
+                    Console.WriteLine(exception);
                     return true; //handled
                 });
                 return false;
@@ -680,7 +680,7 @@ namespace DataCenter.Common
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return ResetAll(key, out v1, out v2, out v3, out v4, out v5, out v6, out v7);
             }
         }
@@ -713,7 +713,7 @@ namespace DataCenter.Common
             {
                 ex.Handle(exception =>
                 {
-                    Trace.WriteLine(exception);
+                    Console.WriteLine(exception);
                     return true; //handled
                 });
                 return false;
