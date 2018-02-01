@@ -47,7 +47,7 @@ namespace DataCenter.Common
             return count;
         }
 
-        protected override Tuple<TState, TValue> Get(TKey key, GetValueDelegate<TKey, TState, TValue> factory)
+        public override Tuple<TState, TValue> Get(TKey key, GetValueDelegate<TKey, TState, TValue> factory)
         {
             factory = factory ?? DefaultFactory;
             if (repository.ContainsKey(key))
@@ -117,7 +117,7 @@ namespace DataCenter.Common
             return count;
         }
 
-        protected override Tuple<TState, TValue1, TValue2> Get(TKey key, GetValueDelegate<TKey, TState, TValue1, TValue2> factory)
+        public override Tuple<TState, TValue1, TValue2> Get(TKey key, GetValueDelegate<TKey, TState, TValue1, TValue2> factory)
         {
             factory = factory ?? DefaultFactory;
             if (repository.ContainsKey(key))
@@ -188,7 +188,7 @@ namespace DataCenter.Common
             return count;
         }
 
-        protected override Tuple<TState, TValue1, TValue2, TValue3> Get(TKey key, GetValueDelegate<TKey, TState, TValue1, TValue2, TValue3> factory)
+        public override Tuple<TState, TValue1, TValue2, TValue3> Get(TKey key, GetValueDelegate<TKey, TState, TValue1, TValue2, TValue3> factory)
         {
             factory = factory ?? DefaultFactory;
             if (repository.ContainsKey(key))
@@ -259,7 +259,7 @@ namespace DataCenter.Common
             return count;
         }
 
-        protected override Tuple<TState, TValue1, TValue2, TValue3, TValue4> Get(TKey key, GetValueDelegate<TKey, TState, TValue1, TValue2, TValue3, TValue4> factory)
+        public override Tuple<TState, TValue1, TValue2, TValue3, TValue4> Get(TKey key, GetValueDelegate<TKey, TState, TValue1, TValue2, TValue3, TValue4> factory)
         {
             factory = factory ?? DefaultFactory;
             if (repository.ContainsKey(key))
@@ -331,7 +331,7 @@ namespace DataCenter.Common
             return count;
         }
 
-        protected override Tuple<TState, TValue1, TValue2, TValue3, TValue4, TValue5> Get(TKey key, GetValueDelegate<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5> factory)
+        public override Tuple<TState, TValue1, TValue2, TValue3, TValue4, TValue5> Get(TKey key, GetValueDelegate<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5> factory)
         {
             factory = factory ?? DefaultFactory;
             if (repository.ContainsKey(key))
@@ -403,7 +403,7 @@ namespace DataCenter.Common
             return count;
         }
 
-        protected override Tuple<TState, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> Get(TKey key, GetValueDelegate<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> factory)
+        public override Tuple<TState, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> Get(TKey key, GetValueDelegate<TKey, TState, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> factory)
         {
             factory = factory ?? DefaultFactory;
             if (repository.ContainsKey(key))
