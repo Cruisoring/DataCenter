@@ -73,16 +73,16 @@ namespace DataCenter.Common
         }
 
         #region Get Operations
-        public TValue Get(TKey key, Func<TKey, TValue> optionalFactory)
+        public TValue Get(TKey key, Func<TKey, TValue> factory)
         {
-            optionalFactory = optionalFactory ?? DefaultFactory;
+            factory = factory ?? DefaultFactory;
 
             TValue value = default(TValue);
             try
             {
                 if (!repository.ContainsKey(key))
                 {
-                    value = optionalFactory.Invoke(key);
+                    value = factory.Invoke(key);
                     repository.Add(key, value);
                 }
                 else

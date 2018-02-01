@@ -17,6 +17,8 @@ namespace DataCenter.Common
     {
         Func<TKey, TValue> DefaultFactory { get; }
 
+        TValue Get(TKey key, Func<TKey, TValue> factory);
+
         TValue Get(TKey key);
 
         TValue this[TKey key] { get; }
@@ -27,6 +29,9 @@ namespace DataCenter.Common
     public interface IRepository<TKey, TValue1, TValue2> : IRepository<TKey>
     {
         GetValueDelegate<TKey, TValue1, TValue2> DefaultFactory { get; }
+
+        Tuple<TValue1, TValue2> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2> factory);
+
         Tuple<TValue1, TValue2> this[TKey key] { get; }
 
         Tuple<TValue1, TValue2> Get(TKey key);
@@ -41,6 +46,9 @@ namespace DataCenter.Common
     public interface IRepository<TKey, TValue1, TValue2, TValue3> : IRepository<TKey>
     {
         GetValueDelegate<TKey, TValue1, TValue2, TValue3> DefaultFactory { get; }
+
+        Tuple<TValue1, TValue2, TValue3> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3> factory);
+
         Tuple<TValue1, TValue2, TValue3> this[TKey key] { get; }
 
         Tuple<TValue1, TValue2, TValue3> Get(TKey key);
@@ -57,6 +65,9 @@ namespace DataCenter.Common
     public interface IRepository<TKey, TValue1, TValue2, TValue3, TValue4> : IRepository<TKey>
     {
         GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> DefaultFactory { get; }
+        Tuple<TValue1, TValue2, TValue3, TValue4> Get(TKey key, 
+            GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> factory);
+
         Tuple<TValue1, TValue2, TValue3, TValue4> this[TKey key] { get; }
 
         Tuple<TValue1, TValue2, TValue3, TValue4> Get(TKey key);
@@ -75,6 +86,9 @@ namespace DataCenter.Common
     public interface IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> : IRepository<TKey>
     {
         GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> DefaultFactory { get; }
+        Tuple<TValue1, TValue2, TValue3, TValue4, TValue5> Get(TKey key,
+            GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> factory);
+
         Tuple<TValue1, TValue2, TValue3, TValue4, TValue5> this[TKey key] { get; }
 
         Tuple<TValue1, TValue2, TValue3, TValue4, TValue5> Get(TKey key);
@@ -95,6 +109,9 @@ namespace DataCenter.Common
     public interface IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> : IRepository<TKey>
     {
         GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> DefaultFactory { get; }
+        Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> Get(TKey key,
+            GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> factory);
+
         Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> this[TKey key] { get; }
 
         Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> Get(TKey key);
@@ -117,6 +134,9 @@ namespace DataCenter.Common
     public interface IRepository<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> : IRepository<TKey>
     {
         GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> DefaultFactory { get; }
+        Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> Get(TKey key,
+            GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> factory);
+
         Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> this[TKey key] { get; }
 
         Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> Get(TKey key);

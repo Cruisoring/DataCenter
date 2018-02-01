@@ -18,4 +18,6 @@
 
   <Import Project="..\DataCenter.Common\DataCenter.Common.projitems" Label="Shared" />
 
+  <Import Project="..\DataCenter.MultiKeys\DataCenter.MultiKeys.projitems" Label="Shared" />
+
 </Project>
