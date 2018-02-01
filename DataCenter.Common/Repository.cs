@@ -73,7 +73,7 @@ namespace DataCenter.Common
         }
 
         #region Get Operations
-        protected TValue Get(TKey key, Func<TKey, TValue> optionalFactory)
+        public TValue Get(TKey key, Func<TKey, TValue> optionalFactory)
         {
             optionalFactory = optionalFactory ?? DefaultFactory;
 
@@ -168,7 +168,7 @@ namespace DataCenter.Common
         }
 
         #region Retrieve Functions
-        protected virtual Tuple<TValue1, TValue2> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2> factory)
+        public virtual Tuple<TValue1, TValue2> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2> factory)
         {
             Tuple<TValue1, TValue2> tuple = null;
             try
@@ -271,7 +271,7 @@ namespace DataCenter.Common
 
         #region Retrieve Functions
 
-        protected virtual Tuple<TValue1, TValue2, TValue3> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3> factory)
+        public virtual Tuple<TValue1, TValue2, TValue3> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3> factory)
         {
             Tuple<TValue1, TValue2, TValue3> tuple = null;
             try
@@ -382,7 +382,7 @@ namespace DataCenter.Common
 
         #region Retrieve Functions
 
-        protected virtual Tuple<TValue1, TValue2, TValue3, TValue4> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> factory)
+        public virtual Tuple<TValue1, TValue2, TValue3, TValue4> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> factory)
         {
             Tuple<TValue1, TValue2, TValue3, TValue4> tuple = null;
             try
@@ -493,7 +493,7 @@ namespace DataCenter.Common
 
         #region Retrieve Functions
 
-        protected virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> factory)
+        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> factory)
         {
             Tuple<TValue1, TValue2, TValue3, TValue4, TValue5> tuple = null;
             try
@@ -606,7 +606,7 @@ namespace DataCenter.Common
 
         #region Retrieve Functions
 
-        protected virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> factory)
+        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> factory)
         {
             Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> tuple = null;
             try
@@ -723,7 +723,7 @@ namespace DataCenter.Common
 
         #region Retrieve Functions
 
-        protected virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> factory)
+        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> factory)
         {
             Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> tuple = null;
             try
