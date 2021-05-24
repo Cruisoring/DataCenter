@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net40;net45;net46;netcoreapp1.0;netcoreapp1.1;netstandard2.0;</TargetFrameworks>
+    <TargetFrameworks>net40;net45;net46;net47;net48;netcoreapp1.0;netcoreapp1.1;netstandard2.0;netstandard2.1;</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0</Version>
+    <Version>1.1</Version>
     <Authors>William JIANG</Authors>
     <Company>EasyWorks</Company>
     <Description>High performance Data Repository with Value retrieval embeded. a single key could be used to get up to 7 strong typed values. ExpirableRepositories provide a similar set of Dictionaries with Timestamp indicating expirations of the values.</Description>

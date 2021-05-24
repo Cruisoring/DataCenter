@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31229.75
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataCenter", "DataCenter\DataCenter.csproj", "{D5F68B14-A856-4801-BAB7-88302E095FCD}"
 EndProject
@@ -15,6 +15,8 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		DataCenter.MultiKeys\DataCenter.MultiKeys.projitems*{13f7ae60-db50-4d4d-8ef2-6a3f5ec4d0a2}*SharedItemsImports = 13
 		DataCenter.Common\DataCenter.Common.projitems*{81d34349-d007-4235-9064-b4f94c8df82f}*SharedItemsImports = 13
+		DataCenter.Common\DataCenter.Common.projitems*{d5f68b14-a856-4801-bab7-88302e095fcd}*SharedItemsImports = 5
+		DataCenter.MultiKeys\DataCenter.MultiKeys.projitems*{d5f68b14-a856-4801-bab7-88302e095fcd}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
