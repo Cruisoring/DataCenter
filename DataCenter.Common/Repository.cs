@@ -75,7 +75,7 @@ namespace DataCenter.Common
         #region Get Operations
         public TValue Get(TKey key, Func<TKey, TValue> factory)
         {
-            factory = factory ?? DefaultFactory;
+            factory ??= DefaultFactory;
 
             TValue value = default(TValue);
             try
@@ -134,7 +134,7 @@ namespace DataCenter.Common
     {
         #region Readonly Properties
 
-        protected readonly IDictionary<TKey, Tuple<TValue1, TValue2>> repository;
+        protected readonly IDictionary<TKey, (TValue1, TValue2)> repository;
 
         public GetValueDelegate<TKey, TValue1, TValue2> DefaultFactory { get; }
 
@@ -142,17 +142,17 @@ namespace DataCenter.Common
 
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2,
-            IDictionary<TKey, Tuple<TValue1, TValue2>> store = null)
+            IDictionary<TKey, (TValue1, TValue2)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2>.Wrap(f1, f2, ExecuteParallelly);
             initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2> getValueFactory,
-            IDictionary<TKey, Tuple<TValue1, TValue2>> store = null)
+            IDictionary<TKey, (TValue1, TValue2)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2>.Wrap(getValueFactory);
             initialize();
         }
@@ -168,29 +168,25 @@ namespace DataCenter.Common
         }
 
         #region Retrieve Functions
-        public virtual Tuple<TValue1, TValue2> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2> factory)
+        public virtual (TValue1, TValue2) Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2> factory)
         {
-            Tuple<TValue1, TValue2> tuple = null;
             try
             {
                 if (!repository.ContainsKey(key))
                 {
-                    factory = factory ?? DefaultFactory;
+                    factory ??= DefaultFactory;
                     if (factory.Invoke(key, out TValue1 value1, out TValue2 value2))
                     {
-                        tuple = Tuple.Create(value1, value2);
-                        repository.Add(key, tuple);
+                        repository.Add(key, (value1, value2));
                     }
                 }
-                else
-                    tuple = repository[key];
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
             }
 
-            return tuple;
+            return repository[key];
         }
 
         public virtual bool Get(TKey key, out TValue1 value1, out TValue2 value2)
@@ -207,8 +203,7 @@ namespace DataCenter.Common
 
                 if (DefaultFactory.Invoke(key, out value1, out value2))
                 {
-                    var tuple = Tuple.Create(value1, value2);
-                    repository.Add(key, tuple);
+                    repository.Add(key, (value1, value2));
                     return true;
                 }
                 return FactoryWrapper<TKey, TValue1, TValue2>.ResetAll(key, out value1, out value2);
@@ -220,9 +215,9 @@ namespace DataCenter.Common
             }
         }
 
-        public virtual Tuple<TValue1, TValue2> this[TKey key] => Get(key, DefaultFactory);
+        public virtual (TValue1, TValue2) this[TKey key] => Get(key, DefaultFactory);
 
-        public virtual Tuple<TValue1, TValue2> Get(TKey key) => Get(key, DefaultFactory);
+        public virtual (TValue1, TValue2) Get(TKey key) => Get(key, DefaultFactory);
 
         public virtual bool Get(TKey key, out TValue1 value1) => Get(key, out value1, out TValue2 value2);
 
@@ -236,7 +231,7 @@ namespace DataCenter.Common
     {
         #region Readonly Properties
 
-        protected readonly IDictionary<TKey, Tuple<TValue1, TValue2, TValue3>> repository;
+        protected readonly IDictionary<TKey, (TValue1, TValue2, TValue3)> repository;
 
         public GetValueDelegate<TKey, TValue1, TValue2, TValue3> DefaultFactory { get; }
 
@@ -244,17 +239,17 @@ namespace DataCenter.Common
 
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-            IDictionary<TKey, Tuple<TValue1, TValue2, TValue3>> store = null)
+            IDictionary<TKey, (TValue1, TValue2, TValue3)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2, TValue3)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3>.Wrap(f1, f2, f3);
             initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2, TValue3> getValueFactory,
-            IDictionary<TKey, Tuple<TValue1, TValue2, TValue3>> store = null)
+            IDictionary<TKey, (TValue1, TValue2, TValue3)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2, TValue3)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3>.Wrap(getValueFactory);
             initialize();
         }
@@ -271,29 +266,25 @@ namespace DataCenter.Common
 
         #region Retrieve Functions
 
-        public virtual Tuple<TValue1, TValue2, TValue3> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3> factory)
+        public virtual (TValue1, TValue2, TValue3) Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3> factory)
         {
-            Tuple<TValue1, TValue2, TValue3> tuple = null;
             try
             {
                 if (!repository.ContainsKey(key))
                 {
-                    factory = factory ?? DefaultFactory;
+                    factory ??= DefaultFactory;
                     if (factory.Invoke(key, out TValue1 v1, out TValue2 v2, out TValue3 v3))
                     {
-                        tuple = Tuple.Create(v1, v2, v3);
-                        repository.Add(key, tuple);
+                        repository.Add(key, (v1, v2, v3));
                     }
                 }
-                else
-                    tuple = repository[key];
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
             }
 
-            return tuple;
+            return repository[key];
         }
 
         public virtual bool Get(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3)
@@ -311,8 +302,7 @@ namespace DataCenter.Common
 
                 if (DefaultFactory.Invoke(key, out v1, out v2, out v3))
                 {
-                    var tuple = Tuple.Create(v1, v2, v3);
-                    repository.Add(key, tuple);
+                    repository.Add(key, (v1, v2, v3));
                     return true;
                 }
                 return FactoryWrapper<TKey, TValue1, TValue2, TValue3>.ResetAll(key, out v1, out v2, out v3);
@@ -324,10 +314,10 @@ namespace DataCenter.Common
             }
         }
 
-        public virtual Tuple<TValue1, TValue2, TValue3> this[TKey key]
+        public virtual (TValue1, TValue2, TValue3) this[TKey key]
             => Get(key, DefaultFactory);
 
-        public virtual Tuple<TValue1, TValue2, TValue3> Get(TKey key) => Get(key, DefaultFactory);
+        public virtual (TValue1, TValue2, TValue3) Get(TKey key) => Get(key, DefaultFactory);
 
         public virtual bool Get(TKey key, out TValue1 v1)
             => Get(key, out v1, out TValue2 value2, out TValue3 value3);
@@ -346,7 +336,7 @@ namespace DataCenter.Common
     {
         #region Readonly Properties
 
-        protected readonly IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>> repository;
+        protected readonly IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4)> repository;
 
         public GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> DefaultFactory { get; }
 
@@ -355,17 +345,17 @@ namespace DataCenter.Common
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
             Func<TKey, TValue4> f4,
-            IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>> store = null)
+            IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2, TValue3, TValue4)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4>.Wrap(f1, f2, f3, f4);
             initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> getValueFactory,
-            IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>> store = null)
+            IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2, TValue3, TValue4)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4>.Wrap(getValueFactory);
             initialize();
         }
@@ -382,30 +372,26 @@ namespace DataCenter.Common
 
         #region Retrieve Functions
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> factory)
+        public virtual (TValue1, TValue2, TValue3, TValue4) Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> factory)
         {
-            Tuple<TValue1, TValue2, TValue3, TValue4> tuple = null;
             try
             {
                 if (!repository.ContainsKey(key))
                 {
-                    factory = factory ?? DefaultFactory;
+                    factory ??= DefaultFactory;
                     if (factory.Invoke(key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
                         out TValue4 v4))
                     {
-                        tuple = Tuple.Create(v1, v2, v3, v4);
-                        repository.Add(key, tuple);
+                        repository.Add(key, (v1, v2, v3, v4));
                     }
                 }
-                else
-                    tuple = repository[key];
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
             }
 
-            return tuple;
+            return repository[key];
         }
 
         public virtual bool Get(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4)
@@ -424,8 +410,7 @@ namespace DataCenter.Common
 
                 if (DefaultFactory.Invoke(key, out v1, out v2, out v3, out v4))
                 {
-                    var tuple = Tuple.Create(v1, v2, v3, v4);
-                    repository.Add(key, tuple);
+                    repository.Add(key, (v1, v2, v3, v4));
                     return true;
                 }
                 return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4>.ResetAll(key, out v1, out v2, out v3, out v4);
@@ -437,9 +422,9 @@ namespace DataCenter.Common
             }
         }
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4> this[TKey key] => Get(key, DefaultFactory);
+        public virtual (TValue1, TValue2, TValue3, TValue4) this[TKey key] => Get(key, DefaultFactory);
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4> Get(TKey key) => Get(key, DefaultFactory);
+        public virtual (TValue1, TValue2, TValue3, TValue4) Get(TKey key) => Get(key, DefaultFactory);
 
         public virtual bool Get(TKey key, out TValue1 v1) => Get(key, out v1, out TValue2 v2, out TValue3 v3, out TValue4 v4);
 
@@ -457,7 +442,7 @@ namespace DataCenter.Common
     {
         #region Readonly Properties
 
-        protected readonly IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>> repository;
+        protected readonly IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5)> repository;
 
         public GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> DefaultFactory { get; }
 
@@ -466,17 +451,17 @@ namespace DataCenter.Common
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
             Func<TKey, TValue4> f4, Func<TKey, TValue5> f5,
-            IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
+            IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>.Wrap(f1, f2, f3, f4, f5);
             initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> getValueFactory,
-            IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
+            IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>.Wrap(getValueFactory);
             initialize();
         }
@@ -493,30 +478,26 @@ namespace DataCenter.Common
 
         #region Retrieve Functions
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> factory)
+        public virtual (TValue1, TValue2, TValue3, TValue4, TValue5) Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> factory)
         {
-            Tuple<TValue1, TValue2, TValue3, TValue4, TValue5> tuple = null;
             try
             {
                 if (!repository.ContainsKey(key))
                 {
-                    factory = factory ?? DefaultFactory;
+                    factory ??= DefaultFactory;
                     if (factory.Invoke(key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
                         out TValue4 v4, out TValue5 v5))
                     {
-                        tuple = Tuple.Create(v1, v2, v3, v4, v5);
-                        repository.Add(key, tuple);
+                        repository.Add(key, (v1, v2, v3, v4, v5));
                     }
                 }
-                else
-                    tuple = repository[key];
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
             }
 
-            return tuple;
+            return repository[key];
         }
 
         public virtual bool Get(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5)
@@ -536,8 +517,7 @@ namespace DataCenter.Common
 
                 if (DefaultFactory.Invoke(key, out v1, out v2, out v3, out v4, out v5))
                 {
-                    var tuple = Tuple.Create(v1, v2, v3, v4, v5);
-                    repository.Add(key, tuple);
+                    repository.Add(key, (v1, v2, v3, v4, v5));
                     return true;
                 }
                 return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5>.ResetAll(key, out v1, out v2, out v3, out v4, out v5);
@@ -549,9 +529,9 @@ namespace DataCenter.Common
             }
         }
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5> this[TKey key] => Get(key, DefaultFactory);
+        public virtual (TValue1, TValue2, TValue3, TValue4, TValue5) this[TKey key] => Get(key, DefaultFactory);
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5> Get(TKey key) => Get(key, DefaultFactory);
+        public virtual (TValue1, TValue2, TValue3, TValue4, TValue5) Get(TKey key) => Get(key, DefaultFactory);
 
         public virtual bool Get(TKey key, out TValue1 v1) => Get(key, out v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5);
 
@@ -570,7 +550,7 @@ namespace DataCenter.Common
     {
         #region Readonly Properties
 
-        protected readonly IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>> repository;
+        protected readonly IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6)> repository;
 
         public GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> DefaultFactory { get; }
 
@@ -579,17 +559,17 @@ namespace DataCenter.Common
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
             Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, Func<TKey, TValue6> f6,
-            IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>> store = null)
+            IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>.Wrap(f1, f2, f3, f4, f5, f6);
             initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> getValueFactory,
-            IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>> store = null)
+            IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>.Wrap(getValueFactory);
             initialize();
         }
@@ -606,30 +586,26 @@ namespace DataCenter.Common
 
         #region Retrieve Functions
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> factory)
+        public virtual (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6) Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> factory)
         {
-            Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> tuple = null;
             try
             {
                 if (!repository.ContainsKey(key))
                 {
-                    factory = factory ?? DefaultFactory;
+                    factory ??= DefaultFactory;
                     if (factory.Invoke(key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
                         out TValue4 v4, out TValue5 v5, out TValue6 v6))
                     {
-                        tuple = Tuple.Create(v1, v2, v3, v4, v5, v6);
-                        repository.Add(key, tuple);
+                        repository.Add(key, (v1, v2, v3, v4, v5, v6));
                     }
                 }
-                else
-                    tuple = repository[key];
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
             }
 
-            return tuple;
+            return repository[key];
         }
 
         public virtual bool Get(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out TValue6 v6)
@@ -650,8 +626,7 @@ namespace DataCenter.Common
 
                 if (DefaultFactory.Invoke(key, out v1, out v2, out v3, out v4, out v5, out v6))
                 {
-                    var tuple = Tuple.Create(v1, v2, v3, v4, v5, v6);
-                    repository.Add(key, tuple);
+                    repository.Add(key, (v1, v2, v3, v4, v5, v6));
                     return true;
                 }
                 return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>.
@@ -665,9 +640,9 @@ namespace DataCenter.Common
             }
         }
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> this[TKey key] => Get(key, DefaultFactory);
+        public virtual (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6) this[TKey key] => Get(key, DefaultFactory);
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> Get(TKey key) => Get(key, DefaultFactory);
+        public virtual (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6) Get(TKey key) => Get(key, DefaultFactory);
 
         public virtual bool Get(TKey key, out TValue1 v1) => Get(key, out v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out TValue6 v6);
 
@@ -687,7 +662,7 @@ namespace DataCenter.Common
     {
         #region Readonly Properties
 
-        protected readonly IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>> repository;
+        protected readonly IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7)> repository;
 
         public GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> DefaultFactory { get; }
 
@@ -696,17 +671,17 @@ namespace DataCenter.Common
         #region Constructors
         public Repository(Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
             Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, Func<TKey, TValue6> f6, Func<TKey, TValue7> f7,
-            IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>> store = null)
+            IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>.Wrap(f1, f2, f3, f4, f5, f6, f7);
             initialize();
         }
 
         public Repository(GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> getValueFactory,
-            IDictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>> store = null)
+            IDictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7)> store = null)
         {
-            repository = store ?? new Dictionary<TKey, Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>>();
+            repository = store ?? new Dictionary<TKey, (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7)>();
             DefaultFactory = FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>.Wrap(getValueFactory);
             initialize();
         }
@@ -723,30 +698,26 @@ namespace DataCenter.Common
 
         #region Retrieve Functions
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> factory)
+        public virtual (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7) Get(TKey key, GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> factory)
         {
-            Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> tuple = null;
             try
             {
                 if (!repository.ContainsKey(key))
                 {
-                    factory = factory ?? DefaultFactory;
+                    factory ??= DefaultFactory;
                     if (factory.Invoke(key, out TValue1 v1, out TValue2 v2, out TValue3 v3,
                         out TValue4 v4, out TValue5 v5, out TValue6 v6, out TValue7 v7))
                     {
-                        tuple = Tuple.Create(v1, v2, v3, v4, v5, v6, v7);
-                        repository.Add(key, tuple);
+                        repository.Add(key, (v1, v2, v3, v4, v5, v6, v7));
                     }
                 }
-                else
-                    tuple = repository[key];
             }
             catch (Exception e)
             {
                 logMessage?.Invoke($"{key}: {e.Message}");
             }
 
-            return tuple;
+            return repository[key];
         }
 
         public virtual bool Get(TKey key, out TValue1 v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out TValue6 v6, out TValue7 v7)
@@ -768,8 +739,7 @@ namespace DataCenter.Common
 
                 if (DefaultFactory.Invoke(key, out v1, out v2, out v3, out v4, out v5, out v6, out v7))
                 {
-                    var tuple = Tuple.Create(v1, v2, v3, v4, v5, v6, v7);
-                    repository.Add(key, tuple);
+                    repository.Add(key, (v1, v2, v3, v4, v5, v6, v7));
                     return true;
                 }
                 return FactoryWrapper<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7>
@@ -783,9 +753,9 @@ namespace DataCenter.Common
             }
         }
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> this[TKey key] => Get(key, DefaultFactory);
+        public virtual (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7) this[TKey key] => Get(key, DefaultFactory);
 
-        public virtual Tuple<TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7> Get(TKey key) => Get(key, DefaultFactory);
+        public virtual (TValue1, TValue2, TValue3, TValue4, TValue5, TValue6, TValue7) Get(TKey key) => Get(key, DefaultFactory);
 
         public virtual bool Get(TKey key, out TValue1 v1) => Get(key, out v1, out TValue2 v2, out TValue3 v3, out TValue4 v4, out TValue5 v5, out TValue6 v6, out TValue7 v7);
 

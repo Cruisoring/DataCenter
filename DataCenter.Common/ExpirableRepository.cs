@@ -7,7 +7,7 @@ namespace DataCenter.Common
         IExpirableRepository<TKey, TValue>
     {
         public ExpirableRepository(TimeSpan expiration,
-            Func<TKey, TValue> f1, IDictionary<TKey, Tuple<DateTime, TValue>> store = null)
+            Func<TKey, TValue> f1, IDictionary<TKey, (DateTime, TValue)> store = null)
             : base((key, time) => time > DateTime.UtcNow,
                 key => DateTime.UtcNow + expiration,
                 f1, store)
@@ -29,7 +29,7 @@ namespace DataCenter.Common
 
         public ExpirableRepository(TimeSpan expiration,
             Func<TKey, TValue1> f1, Func<TKey, TValue2> f2,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2>> store = null)
+            IDictionary<TKey, (DateTime, TValue1, TValue2)> store = null)
             : base((key, time) => time > DateTime.UtcNow,
                 key => DateTime.UtcNow + expiration,
                 f1, f2, store)
@@ -38,7 +38,7 @@ namespace DataCenter.Common
 
         public ExpirableRepository(TimeSpan expiration,
             GetValueDelegate<TKey, TValue1, TValue2> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2>> store = null)
+            IDictionary<TKey, (DateTime, TValue1, TValue2)> store = null)
             : base((key, time) => time > DateTime.UtcNow, Wrap(expiration, getValueFactory), store)
         {
         }
@@ -58,7 +58,7 @@ namespace DataCenter.Common
 
         public ExpirableRepository(TimeSpan expiration,
             Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3>> store = null)
+            IDictionary<TKey, (DateTime, TValue1, TValue2, TValue3)> store = null)
             : base((key, time) => time > DateTime.UtcNow,
                 key => DateTime.UtcNow + expiration,
                 f1, f2, f3, store)
@@ -67,7 +67,7 @@ namespace DataCenter.Common
 
         public ExpirableRepository(TimeSpan expiration,
             GetValueDelegate<TKey, TValue1, TValue2, TValue3> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3>> store = null)
+            IDictionary<TKey, (DateTime, TValue1, TValue2, TValue3)> store = null)
             : base((key, time) => time > DateTime.UtcNow, Wrap(expiration, getValueFactory), store)
         {
         }
@@ -88,7 +88,7 @@ namespace DataCenter.Common
         public ExpirableRepository(TimeSpan expiration,
             Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
             Func<TKey, TValue4> f4,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4>> store = null)
+            IDictionary<TKey, (DateTime, TValue1, TValue2, TValue3, TValue4)> store = null)
             : base((key, time) => time > DateTime.UtcNow,
                 key => DateTime.UtcNow + expiration,
                 f1, f2, f3, f4, store)
@@ -97,7 +97,7 @@ namespace DataCenter.Common
 
         public ExpirableRepository(TimeSpan expiration,
             GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4>> store = null)
+            IDictionary<TKey, (DateTime, TValue1, TValue2, TValue3, TValue4)> store = null)
             : base((key, time) => time > DateTime.UtcNow, Wrap(expiration, getValueFactory), store)
         {
         }
@@ -118,7 +118,7 @@ namespace DataCenter.Common
         public ExpirableRepository(TimeSpan expiration,
             Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
             Func<TKey, TValue4> f4, Func<TKey, TValue5> f5,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
+            IDictionary<TKey, (DateTime, TValue1, TValue2, TValue3, TValue4, TValue5)> store = null)
             : base((key, time) => time > DateTime.UtcNow,
                 key => DateTime.UtcNow + expiration,
                 f1, f2, f3, f4, f5, store)
@@ -127,7 +127,7 @@ namespace DataCenter.Common
 
         public ExpirableRepository(TimeSpan expiration,
             GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5>> store = null)
+            IDictionary<TKey, (DateTime, TValue1, TValue2, TValue3, TValue4, TValue5)> store = null)
             : base((key, time) => time > DateTime.UtcNow, Wrap(expiration, getValueFactory), store)
         {
         }
@@ -148,7 +148,7 @@ namespace DataCenter.Common
         public ExpirableRepository(TimeSpan expiration,
             Func<TKey, TValue1> f1, Func<TKey, TValue2> f2, Func<TKey, TValue3> f3,
             Func<TKey, TValue4> f4, Func<TKey, TValue5> f5, Func<TKey, TValue6> f6,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>> store = null)
+            IDictionary<TKey, (DateTime, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6)> store = null)
             : base((key, time) => time > DateTime.UtcNow,
                 key => DateTime.UtcNow + expiration,
                 f1, f2, f3, f4, f5, f6, store)
@@ -157,7 +157,7 @@ namespace DataCenter.Common
 
         public ExpirableRepository(TimeSpan expiration,
             GetValueDelegate<TKey, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6> getValueFactory,
-            IDictionary<TKey, Tuple<DateTime, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6>> store = null)
+            IDictionary<TKey, (DateTime, TValue1, TValue2, TValue3, TValue4, TValue5, TValue6)> store = null)
             : base((key, time) => time > DateTime.UtcNow, Wrap(expiration, getValueFactory), store)
         {
         }

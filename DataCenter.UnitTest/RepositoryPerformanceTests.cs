@@ -150,7 +150,7 @@ namespace DataCenter.UnitTest
 
             var repo2 = new Repository<DateTime, String, int, long, DayOfWeek, DateTime,
                 TimeSpan, double>(getDateTimeDetails,
-                new ConcurrentDictionary<DateTime, Tuple<string, int, long, DayOfWeek, DateTime, TimeSpan, double>>());
+                new ConcurrentDictionary<DateTime, (string, int, long, DayOfWeek, DateTime, TimeSpan, double)>());
 
             funcDurationMills = 0;
             repeatAdding(repo1, repo2, 100);
@@ -175,8 +175,14 @@ namespace DataCenter.UnitTest
                 DateTime time = today.AddMinutes(random.Next(0, 60));
                 if (next < 5)
                 {
-                    if (repo.Get(time) == null)
+                    try
+                    {
+                        var result = repo.Get(time);
+                    }
+                    catch
+                    {
                         getFailed++;
+                    }
                 }
                 else
                 {
@@ -221,8 +227,8 @@ namespace DataCenter.UnitTest
             //*/
             var repo = new Repository<DateTime, String, int, long, DayOfWeek, DateTime,
                 TimeSpan, double>(getDateTimeDetails
-                , new ConcurrentDictionary<DateTime, Tuple<string, int, long, DayOfWeek, DateTime, TimeSpan, double>>());
-            logTime("MultiThread random read/write:", () => testMultiThread(repo, 200, 10000));
+                , new ConcurrentDictionary<DateTime, (string, int, long, DayOfWeek, DateTime, TimeSpan, double)>());
+            logTime("MultiThread random read/write:", () => testMultiThread(repo, 5, 1000));
             /*/// No-threadSafe repository might hang test runner process forever
             var repo = new Repository<DateTime, String, int, long, DayOfWeek, DateTime,
                 TimeSpan, double>(getDateTimeDetails);
