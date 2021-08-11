@@ -13,6 +13,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DataCenter.MultiKeys", "Dat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2640733C-EDA1-4FF7-B776-4EE1E8FB319B}"
 	ProjectSection(SolutionItems) = preProject
+		MultiKeyRepository.md = MultiKeyRepository.md
 		README.md = README.md
 	EndProjectSection
 EndProject
