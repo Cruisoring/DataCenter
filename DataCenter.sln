@@ -7,9 +7,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataCenter", "DataCenter\Da
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DataCenter.Common", "DataCenter.Common\DataCenter.Common.shproj", "{81D34349-D007-4235-9064-B4F94C8DF82F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCenter.UnitTest", "DataCenter.UnitTest\DataCenter.UnitTest.csproj", "{EE122C16-EEB6-4A49-84A1-181D23606016}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataCenter.UnitTest", "DataCenter.UnitTest\DataCenter.UnitTest.csproj", "{EE122C16-EEB6-4A49-84A1-181D23606016}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DataCenter.MultiKeys", "DataCenter.MultiKeys\DataCenter.MultiKeys.shproj", "{13F7AE60-DB50-4D4D-8EF2-6A3F5EC4D0A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2640733C-EDA1-4FF7-B776-4EE1E8FB319B}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

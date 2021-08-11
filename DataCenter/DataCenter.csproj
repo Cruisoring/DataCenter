@@ -7,13 +7,15 @@
     <Company>EasyWorks</Company>
     <Description>High performance Data Repository with Value retrieval embeded. a single key could be used to get up to 7 strong typed values. ExpirableRepositories provide a similar set of Dictionaries with Timestamp indicating expirations of the values.</Description>
     <Copyright>Copyright (c) 2018 William JIANG</Copyright>
-    <PackageLicenseUrl>https://github.com/Cruisoring/DataCenter</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Cruisoring/DataCenter</PackageProjectUrl>
     <PackageIconUrl></PackageIconUrl>
     <RepositoryUrl>https://github.com/Cruisoring/DataCenter</RepositoryUrl>
     <PackageTags>Dictionary, Expiration, Auto-fetch, ConcurrentDictionary, Multiple-Values.</PackageTags>
-    <PackageReleaseNotes>Limited functions to support common data retrieval and caching scenarios.</PackageReleaseNotes>
+    <PackageReleaseNotes>Generic caching with factory method, and optional initial values.</PackageReleaseNotes>
     <PackageId>EasyWorks.DataCenter</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <NeutralLanguage>en-AU</NeutralLanguage>
   </PropertyGroup>
 
   <Import Project="..\DataCenter.Common\DataCenter.Common.projitems" Label="Shared" />
